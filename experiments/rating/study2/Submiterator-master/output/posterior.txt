@@ -1,0 +1,115 @@
+ Family: cumulative 
+  Links: mu = logit; disc = identity 
+Formula: rating ~ grammatical.C * True_Minus_False.C + (1 + grammatical.C + True_Minus_False.C + grammatical.C * True_Minus_False.C | workerid) + (1 + grammatical.C | noun) + (1 + grammatical.C + True_Minus_False.C + grammatical.C * True_Minus_False.C | remainder) 
+   Data: data (Number of observations: 5320) 
+Samples: 4 chains, each with iter = 2000; warmup = 1000; thin = 1;
+         total post-warmup samples = 4000
+
+Group-Level Effects: 
+~noun (Number of levels: 28) 
+                             Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS
+sd(Intercept)                    0.12      0.05     0.01     0.21 1.01     1002
+sd(grammatical.C)                0.27      0.10     0.07     0.46 1.01      905
+cor(Intercept,grammatical.C)     0.21      0.41    -0.66     0.91 1.00     1048
+                             Tail_ESS
+sd(Intercept)                     824
+sd(grammatical.C)                 696
+cor(Intercept,grammatical.C)     1663
+
+~remainder (Number of levels: 28) 
+                                                         Estimate Est.Error
+sd(Intercept)                                                0.40      0.07
+sd(grammatical.C)                                            0.60      0.11
+sd(True_Minus_False.C)                                       0.07      0.04
+sd(grammatical.C:True_Minus_False.C)                         0.08      0.06
+cor(Intercept,grammatical.C)                                 0.53      0.17
+cor(Intercept,True_Minus_False.C)                            0.11      0.34
+cor(grammatical.C,True_Minus_False.C)                        0.33      0.34
+cor(Intercept,grammatical.C:True_Minus_False.C)              0.03      0.40
+cor(grammatical.C,grammatical.C:True_Minus_False.C)          0.14      0.40
+cor(True_Minus_False.C,grammatical.C:True_Minus_False.C)     0.08      0.44
+                                                         l-95% CI u-95% CI Rhat
+sd(Intercept)                                                0.29     0.54 1.00
+sd(grammatical.C)                                            0.41     0.83 1.00
+sd(True_Minus_False.C)                                       0.00     0.14 1.00
+sd(grammatical.C:True_Minus_False.C)                         0.00     0.23 1.00
+cor(Intercept,grammatical.C)                                 0.18     0.81 1.00
+cor(Intercept,True_Minus_False.C)                           -0.56     0.73 1.00
+cor(grammatical.C,True_Minus_False.C)                       -0.45     0.86 1.00
+cor(Intercept,grammatical.C:True_Minus_False.C)             -0.73     0.78 1.00
+cor(grammatical.C,grammatical.C:True_Minus_False.C)         -0.68     0.83 1.00
+cor(True_Minus_False.C,grammatical.C:True_Minus_False.C)    -0.75     0.84 1.00
+                                                         Bulk_ESS Tail_ESS
+sd(Intercept)                                                1302     1943
+sd(grammatical.C)                                            1929     2879
+sd(True_Minus_False.C)                                        958     1416
+sd(grammatical.C:True_Minus_False.C)                         1428     1873
+cor(Intercept,grammatical.C)                                 1614     1982
+cor(Intercept,True_Minus_False.C)                            4840     2731
+cor(grammatical.C,True_Minus_False.C)                        3621     2258
+cor(Intercept,grammatical.C:True_Minus_False.C)              6025     2944
+cor(grammatical.C,grammatical.C:True_Minus_False.C)          4711     3007
+cor(True_Minus_False.C,grammatical.C:True_Minus_False.C)     3104     3041
+
+~workerid (Number of levels: 190) 
+                                                         Estimate Est.Error
+sd(Intercept)                                                1.39      0.08
+sd(grammatical.C)                                            1.87      0.12
+sd(True_Minus_False.C)                                       0.04      0.03
+sd(grammatical.C:True_Minus_False.C)                         0.12      0.08
+cor(Intercept,grammatical.C)                                -0.46      0.07
+cor(Intercept,True_Minus_False.C)                           -0.11      0.36
+cor(grammatical.C,True_Minus_False.C)                        0.34      0.37
+cor(Intercept,grammatical.C:True_Minus_False.C)             -0.35      0.33
+cor(grammatical.C,grammatical.C:True_Minus_False.C)          0.29      0.32
+cor(True_Minus_False.C,grammatical.C:True_Minus_False.C)     0.09      0.44
+                                                         l-95% CI u-95% CI Rhat
+sd(Intercept)                                                1.25     1.56 1.00
+sd(grammatical.C)                                            1.66     2.11 1.00
+sd(True_Minus_False.C)                                       0.00     0.11 1.00
+sd(grammatical.C:True_Minus_False.C)                         0.01     0.29 1.00
+cor(Intercept,grammatical.C)                                -0.58    -0.32 1.01
+cor(Intercept,True_Minus_False.C)                           -0.77     0.66 1.00
+cor(grammatical.C,True_Minus_False.C)                       -0.55     0.89 1.00
+cor(Intercept,grammatical.C:True_Minus_False.C)             -0.87     0.42 1.00
+cor(grammatical.C,grammatical.C:True_Minus_False.C)         -0.45     0.84 1.00
+cor(True_Minus_False.C,grammatical.C:True_Minus_False.C)    -0.74     0.83 1.00
+                                                         Bulk_ESS Tail_ESS
+sd(Intercept)                                                 809     1918
+sd(grammatical.C)                                            1099     2107
+sd(True_Minus_False.C)                                       1605     1369
+sd(grammatical.C:True_Minus_False.C)                          980     1688
+cor(Intercept,grammatical.C)                                 1140     2108
+cor(Intercept,True_Minus_False.C)                            5216     2369
+cor(grammatical.C,True_Minus_False.C)                        4290     3013
+cor(Intercept,grammatical.C:True_Minus_False.C)              4093     2458
+cor(grammatical.C,grammatical.C:True_Minus_False.C)          3977     2312
+cor(True_Minus_False.C,grammatical.C:True_Minus_False.C)     2228     2811
+
+Population-Level Effects: 
+                                 Estimate Est.Error l-95% CI u-95% CI Rhat
+Intercept[1]                        -3.31      0.14    -3.59    -3.04 1.00
+Intercept[2]                        -0.88      0.13    -1.14    -0.62 1.00
+Intercept[3]                         0.77      0.13     0.51     1.02 1.00
+Intercept[4]                         2.95      0.14     2.68     3.21 1.00
+grammatical.C                       -1.88      0.19    -2.25    -1.50 1.00
+True_Minus_False.C                   0.02      0.03    -0.04     0.08 1.00
+grammatical.C:True_Minus_False.C    -0.19      0.06    -0.31    -0.06 1.00
+                                 Bulk_ESS Tail_ESS
+Intercept[1]                          557      985
+Intercept[2]                          542      847
+Intercept[3]                          551      931
+Intercept[4]                          606     1240
+grammatical.C                         985     1891
+True_Minus_False.C                   3098     2469
+grammatical.C:True_Minus_False.C     3579     2958
+
+Family Specific Parameters: 
+     Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+disc     1.00      0.00     1.00     1.00 1.00     4000     4000
+
+Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
+and Tail_ESS are effective sample size measures, and Rhat is the potential
+scale reduction factor on split chains (at convergence, Rhat = 1).
+
+Posterior:0.00275

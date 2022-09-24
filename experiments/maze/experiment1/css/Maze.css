@@ -1,0 +1,98 @@
+.Maze-sentence {
+     background-color: white;
+     padding-top: 50px;
+     font-size: 250%;
+     padding-bottom: 20px;
+     float: center;
+     text-align: center;
+}
+.Maze-counter{
+     background-color: white;
+     padding-top: 10px;
+     font-size: 100%;
+     text-align: center;
+     float: center
+}
+.Maze-arrow {
+     background-color: white;
+     padding-top: 0%;
+     float: center;
+     padding-bottom: 0%;
+     text-align: center;
+     width: 800px;
+     display: block;
+}
+.Maze-larrow {
+     background-color: white;
+     width: 5%;
+     padding-top: 0%;
+     border: 2px solid black;
+     padding-bottom: 0%;
+     display: inline-block;
+     margin-right: 20%;
+     margin-left:20%;
+     font-size: 300%;
+     position: relative;
+}
+.Maze-rarrow {
+     background-color: white;
+     width: 5%;
+     padding-top: 0%;
+     border: 2px solid black;
+     padding-bottom: 0%;
+     display: inline-block;
+     margin-left: 20%;
+     margin-right: 20%;
+     font-size:300%;
+     position: relative;
+     
+}
+.Maze-words {
+     background-color: white;
+     width: 800px;
+     display: block;
+     background-color: white;
+     padding-top: 50px;
+     font-size: 250%;
+     padding-bottom: 20px;
+}
+.Maze-lword {
+     background-color: white;
+     width: 370px;     
+     text-align : center;
+}
+.Maze-rword {
+     background-color: white;
+     width: 370px;
+     text-align : center;
+}
+
+.Maze-error {
+     background-color: white;
+     color: red;
+     width: 40%;
+     padding-top: 20px;
+     padding-bottom: 0%;
+     display: inline-block;
+     margin-left: 20%;
+     margin-right: 20%;
+     font-size: 150%;
+     
+}
+.Maze-parent {
+	background: gray;
+  /* inline-block hack */
+  font-size: 0;
+  
+}
+
+.Maze-child {
+	width: 800px;
+  height: 400px;
+  margin: 0 10px;
+	background: blue;
+  /* inline-block hack */
+  display: inline-block;
+  font-size: medium;
+  text-align: left;
+}

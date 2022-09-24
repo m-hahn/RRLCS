@@ -1,92 +1,128 @@
-# resource-rational-surprisal
+# A Resource-Rational Model of Human Processing of Recursive Linguistic Structure
+
+This repository contains all code and data for the paper.
+
+- [Experiments: Code, Data, and Analyses](experiments/)
+- [Model: Code and Results](model/)
+- [Materials: Experimental Items and Nouns](materials/)
+
+Models and log files (linked using local paths in the scripts) are publicly available [here](https://nlp.stanford.edu/~mhahn/resource-rational-surprisal/). Model output on the critical stimuli, for reproducing simulation results, has been published [at Zenodo](https://zenodo.org/record/6988696).
+Models have also been published [at Zenodo](https://zenodo.org/record/6602698).
+The corpus used for model fitting is available [here](https://nlp.stanford.edu/~mhahn/tabula-rasa/DATA/), specifically [training](https://nlp.stanford.edu/~mhahn/tabula-rasa/DATA/english-train-tagged.txt) and [held-out](https://nlp.stanford.edu/~mhahn/tabula-rasa/DATA/english-valid-tagged.txt) partitions. The corpus was [previously](https://doi.org/10.1162/tacl_a_00306) derived from the official English Wikipedia dump by applying [Wikiextractor](http://attardi.github.io/wikiextractor/) and [TreeTagger](https://cis.uni-muenchen.de/~schmid/tools/TreeTagger/). An example is given [here](materials/corpus_example.txt). Refer [here](model/compute_surprisal/README.md) if you want to run the model on your own stimuli.
+
+## Links to Figures in Paper and SI
+
+Main Paper, Figure 3:
+
+
+- [Experiment 1, Surprisal Theory](model/compute_surprisal/analyze_output/figures/model-critical-experiment1-005-points_SQUARE_Bits.pdf)
+- [Experiment 1, Model](model/compute_surprisal/analyze_output/figures/model-critical-experiment1-05-points_Bits.pdf)
+- [Experiment 1, Reading Times](experiments/maze/experiment1/Submiterator-master/figures/logRT-points-fit_errorbars_noLogTransform.pdf)
+- [Experiment 1, Analysis Script](experiments/maze/experiment1/Submiterator-master/analyze.R)
+- [Experiment 2, Surprisal Theory](model/compute_surprisal/analyze_output/figures/model-critical-experiment2-005-points_SQUARE.pdf)
+- [Experiment 2, Model](model/compute_surprisal/analyze_output/figures/model-critical-experiment2-05-points_Bits.pdf)
+- [Experiment 2, Reading Times](experiments/maze/experiment2/Submiterator-master/figures/logRT-points-fit_errorbars_noLogTransform.pdf)
+- [Experiment 2, Analysis Script](experiments/maze/experiment2/Submiterator-master/analyze_Experiment2.R)
+
+Main Paper, Figure 4:
+
+
+- [English](experiments/production/experiment3_english/Submiterator-master/figures/rates_by_conditional.pdf)
+- [Spanish](experiments/production/experiment3_spanish/Submiterator-master/figures/rates_by_conditional.pdf)
+- [German](experiments/production/experiment3_german/Submiterator-master/figures/rates_by_conditional.pdf)
 
 
 
-## Getting started
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+Model Predictions (SI Appendix, Section 2):
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+- [Retention Probabilities](model/compute_surprisal/figures/retention_rates_lambda1_20_raw_overall.pdf)
+- [Retention Probabilities (that and prepositions)](model/compute_surprisal/figures/retention_rates_lambda1_20_raw_overall_functionWords.pdf)
+- [Model Surprisal (Experiment 1)](model/compute_surprisal/analyze_output/figures/model-critical-experiment1-full-NoLimit_Lambda1_Integer_Bits.pdf)
+- [Model Surprisal (Experiment 2)](model/compute_surprisal/analyze_output/figures/model-critical-experiment2-full-NoLimit_Lambda1_Integer_Bits.pdf)
+- [Model Fit (AIC)](experiments/maze/meta/figures/analyze_Model_IncludingNoTP_E12_Viz_R_AICRaw_Lambda1_Integer.pdf)
+- [Scaling of Surprisal and RTs](experiments/maze/meta/figures/analyze_Model_PlotForExpt12_Joint_ModelHuman_OnlyExpt12_R_Bits.pdf)
 
-## Add your files
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+Analyses for RT Studies (SI Appendix, Section 3):
 
-```
-cd existing_repo
-git remote add origin https://gitlab.com/m-hahn/resource-rational-surprisal.git
-git branch -M main
-git push -uf origin main
-```
+- [Experiment 1, Main effects](experiments/maze/experiment1/Submiterator-master/figures/posterior-histograms-main_effects.pdf) 
+- [Experiment 1, Interactions](experiments/maze/experiment1/Submiterator-master/figures/posterior-histograms-interactions.pdf)
+- [Experiment 1, Effects in raw RTs](experiments/maze/experiment1/Submiterator-master/figures/posterior-histograms-RawEffects.pdf)
+- [Experiment 2, Main effects](experiments/maze/experiment2/Submiterator-master/figures/posterior-histograms-main_effects.pdf) 
+- [Experiment 2, Interactions](experiments/maze/experiment2/Submiterator-master/figures/posterior-histograms-interactions.pdf)
+- [Experiment 2, Effects in raw RTs](experiments/maze/experiment2/Submiterator-master/figures/posterior-histograms-RawEffects.pdf)
+- [Errors by position](experiments/maze/meta/figures/errors-by-position.pdf)
+- [Error rates by participant](experiments/maze/meta/figures/slides-errors.pdf)
+- [Analysis of errors: Main effects](experiments/maze/meta/figures/analyze_Errors_R_posterior-histograms-main_effects.pdf) 
+- [Analysis of errors: Interactions](experiments/maze/meta/figures/analyze_Errors_R_posterior-histograms-interactions.pdf)
+- [Analysis including incorrect responses: Main effects](experiments/maze/meta/figures/analyze_WithErrors_R_posterior-histograms-main_effects.pdf) 
+- [Analysis including incorrect responses: Interactions](experiments/maze/meta/figures/analyze_WithErrors_R_posterior-histograms-interactions.pdf)
+- [Analysis including incorrect responses: Effects involving answer correctness](experiments/maze/meta/figures/analyze_WithErrors_R_posterior-histograms-interactionsWithCorrect.pdf)
 
-## Integrate with your tools
+Analyses for Production Studies (SI Appendix, Section 4):
 
-- [ ] [Set up project integrations](https://gitlab.com/m-hahn/resource-rational-surprisal/-/settings/integrations)
+- [English](experiments/production/experiment3_english/Submiterator-master/figures/posterior-histograms.pdf) 
+- [German](experiments/production/experiment3_german/Submiterator-master/figures/posterior-histograms.pdf) 
+- [Spanish](experiments/production/experiment3_spanish/Submiterator-master/figures/posterior-histograms.pdf) 
 
-## Collaborate with your team
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Automatically merge when pipeline succeeds](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+Ratings Studies (SI Appendix, Section 5):
 
-## Test and Deploy
+- [Ratings Study 1, raw](experiments/rating/study1/Submiterator-master/figures/rating_understand-logodds-byNoun-LogRatio.pdf)
+- [Ratings Study 1, analysis](experiments/rating/study1/Submiterator-master/figures/posterior-histograms-main_effects.pdf)
+- [Ratings Study 2, raw](experiments/rating/study2/Submiterator-master/figures/rating_understand-logodds-byNoun-LogRatio.pdf)
+- [Ratings Study 2, analysis](experiments/rating/study2/Submiterator-master/figures/posterior-histograms-main_effects.pdf)
 
-Use the built-in continuous integration in GitLab.
+Previous Reading Time Studies (SI Appendix, Section 6):
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+- [Experiment S1, raw](experiments/maze/previous/study1_EmbeddingBias/Submiterator-master/figures/rt-raw.pdf)
+- [Experiment S1, analysis](experiments/maze/previous/study1_EmbeddingBias/Submiterator-master/figures/posterior-histograms-main_effects.pdf)
+- [Experiment S2, raw](experiments/maze/previous/study2_compatible/Submiterator-master/figures/rt-raw.pdf)
+- [Experiment S2, analysis](experiments/maze/previous/study2_compatible/Submiterator-master/figures/posterior-histograms-main_effects.pdf)
+- [Experiment S3, raw](experiments/maze/previous/study3_OneTwo/Submiterator-master/figures/logRT-points-fit_NoLogTransform.pdf) 
+- [Experiment S3, analysis](experiments/maze/previous/study3_OneTwo/Submiterator-master/figures/posterior-histograms.pdf)
+- [Experiment S4, raw](experiments/maze/previous/study4_compatibility/Submiterator-master/figures/logRT-points-fit_NoLogTransform.pdf) 
+- [Experiment S4, analysis](experiments/maze/previous/study4_compatibility/Submiterator-master/figures/posterior-histograms.pdf)
+- [Experiment S5, raw](experiments/maze/previous/study5_replication/Submiterator-master/figures/logRT-points-fit_errorbars_noLogTransform.pdf) 
+- [Experiment S5, analysis: main effects](experiments/maze/previous/study5_replication/Submiterator-master/figures/posterior-histograms-main_effects.pdf) 
+- [Experiment S5, analysis: interactions](experiments/maze/previous/study5_replication/Submiterator-master/figures/posterior-histograms-interactions.pdf)
 
-***
+Meta-Analysis (SI Appendix, Section 6.6):
 
-# Editing this README
+- [Main Effects](experiments/maze/meta/figures/posterior-histograms-main_effects.pdf)
+- [Interactions](experiments/maze/meta/figures/posterior-histograms-interactions.pdf)
+- [In raw reading times](experiments/maze/meta/figures/posterior-histograms-RawEffects.pdf)
+- [Main Effects (with regularizing prior)](experiments/maze/meta/figures/posterior-histograms-main_effects_prior.pdf)
+- [Interactions (with regularizing prior)](experiments/maze/meta/figures/posterior-histograms-interactions_prior.pdf)
+- [In raw reading times (with regularizing prior)](experiments/maze/meta/figures/posterior-histograms-RawEffects_prior.pdf)
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
+Model Fit in Fillers (SI Appendix, Section 9):
 
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+- [Maze](model/compute_surprisal/analyze_output/fillers/figures/analyzeFillers_freq_BNC_Spillover_Averaged_New_R_Lambda1_Integer.pdf)
+- [Eye Tracking: First Pass Times](model/compute_surprisal/analyze_output/fillers/figures/analyzeFillers_freq_BNC_FPRT_Spillover_Averaged_New_R_Lambda1_Integer.pdf)
+- [Self-Paced Reading](model/compute_surprisal/analyze_output/fillers/figures/analyzeFillers_freq_BNC_SPR_Spillover_Averaged_New_R_Lambda1_Integer.pdf)
 
-## Name
-Choose a self-explaining name for your project.
+Control Studies for Embedding Bias (SI Appendix, Section 10):
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+- [Posterior with Wikipedia Counts](experiments/maze/meta/controls/figures/posterior-histograms-EmbeddingBias_wikipedia.pdf)
+- [Posterior with ukWaC Counts](experiments/maze/meta/controls/figures/posterior-histograms-EmbeddingBias_ukwac.pdf)
+- [Posterior with COCA Counts](experiments/maze/meta/controls/figures/posterior-histograms-EmbeddingBias_coca.pdf)
+- [Raw data, Experiment 3 (Wikipedia)](experiments/production/experiment3_english/Submiterator-master/figures/rates_by_conditional.pdf)
+- [Raw data, Experiment 3 (ukWaC)](experiments/production/experiment3_english/Submiterator-master/figures/rates_by_conditional_ukwac.pdf)
+- [Raw data, Experiment 3 (COCA)](experiments/production/experiment3_english/Submiterator-master/figures/rates_by_conditional_COCA.pdf)
+- [Fixed effect posterior, Experiment 3 (Wikipedia)](experiments/production/experiment3_english/Submiterator-master/figures/posterior-histograms.pdf)
+- [Fixed effect posterior, Experiment 3 (ukWaC)](experiments/production/experiment3_english/Submiterator-master/figures/posterior-histograms_ukwac.pdf)
+- [Fixed effect posterior, Experiment 3 (COCA)](experiments/production/experiment3_english/Submiterator-master/figures/posterior-histograms_COCA.pdf)
+- [Model fit by predictor](experiments/maze/meta/controls/analyze_Previous_AIC_Single_R.pdf)
+- [Embedding bias and RT effect](experiments/maze/meta/output/plotNounIntercepts_R.pdf)
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+Nouns (SI Appendix, Section 11):
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+- [German](materials/nouns/figures/nouns_german.pdf)
+- [Spanish](materials/nouns/figures/nouns_spanish.pdf)
+- [English (Wikipedia)](materials/nouns/English/figures/All_nouns_byType.pdf)
+- [English (ukWaC)](materials/nouns/English/figures/All_nouns_byType_ukWaC.pdf)
+- [English (COCA)](materials/nouns/English/figures/All_nouns_byType_COCA.pdf)
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
