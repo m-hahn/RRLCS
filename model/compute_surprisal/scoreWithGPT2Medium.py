@@ -15,7 +15,15 @@ def scoreSentences(batch):
        for i in range(len(tensors)):
           tensors[i] = torch.cat([torch.LongTensor([tokenizer.bos_token_id]).view(1,1), tensors[i], torch.LongTensor([tokenizer.eos_token_id for _ in range(maxLength - tensors[i].size()[1])]).view(1, -1)], dim=1)
        tensors = torch.cat(tensors, dim=0)
-       predictions, _ = model(tensors.cuda())
+       # Accounting for a change in transformers library since this was originally written
+       if int(VERSION[0]) < 3:
+          predictions, _ = model(tensors.cuda())
+       else:
+# Transformers v 3:
+          predictions = model(tensors.cuda())
+          predictions = predictions["logits"]
+#       print(tensors)
+#       print("PREDICTIONS", predictions.size())      
        surprisals = torch.nn.CrossEntropyLoss(reduction='none')(predictions[:,:-1].contiguous().view(-1, 50257), tensors[:,1:].contiguous().view(-1).cuda()).view(len(batch), -1)
        surprisals = surprisals.detach().cpu()
  #      print(surprisals, surprisals.size())
