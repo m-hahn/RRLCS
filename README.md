@@ -1,4 +1,4 @@
-# A Resource-Rational Model of Human Processing of Recursive Linguistic Structure
+# Resource-Rational Lossy-Context Surprisal (Code and Data)
 
 This repository contains all code and data for the paper.
 

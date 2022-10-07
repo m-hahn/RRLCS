@@ -39,3 +39,6 @@ Samples were drawn using sampling(NUTS). For each parameter, Bulk_ESS
 and Tail_ESS are effective sample size measures, and Rhat is the potential
 scale reduction factor on split chains (at convergence, Rhat = 1).
 [1] 0
+
+# Spanish: β = −0.23, 95% CrI [−0.34, −0.12], P (β > 0) <
+# 0.0003;

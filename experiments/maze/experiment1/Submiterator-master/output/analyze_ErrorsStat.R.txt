@@ -1,1 +1,8 @@
 [1] 0.01895735
+[1] 0.01010101
+
+# The median participant made an error on 1.9% of words
+# across both fillers and critical trials. The predetermined exclusion
+# criterion for participants (incorrect response on ≥20% of words)
+# affected 1.0% of participants.
+

@@ -1,5 +1,9 @@
 import torch
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
+import transformers
+
+VERSION = transformers.__version__
+
 
 tokenizer = GPT2Tokenizer.from_pretrained("gpt2-large", cache_dir="/u/scr/mhahn/cache/")
 
@@ -17,10 +21,13 @@ for text in sys.stdin:
        for i in range(len(tensors)):
           tensors[i] = torch.cat([torch.LongTensor([tokenizer.bos_token_id]).view(1,1), tensors[i], torch.LongTensor([tokenizer.eos_token_id for _ in range(maxLength - tensors[i].size()[1])]).view(1, -1)], dim=1)
        tensors = torch.cat(tensors, dim=0)
-       predictions, _ = model(tensors.cuda())
+       # Accounting for a change in transformers library since this was originally written
+       if int(VERSION[0]) < 3:
+          predictions, _ = model(tensors.cuda())
+       else:
 # Transformers v 3:
-#       predictions = model(tensors.cuda())
-#       predictions = predictions["logits"]
+          predictions = model(tensors.cuda())
+          predictions = predictions["logits"]
 #       print(tensors)
 #       print("PREDICTIONS", predictions.size())      
        surprisals = torch.nn.CrossEntropyLoss(reduction='none')(predictions[:,:-1].contiguous().view(-1, 50257), tensors[:,1:].contiguous().view(-1).cuda()).view(len(batch), -1)
