@@ -12,6 +12,16 @@ data = read.csv("trials_byWord.tsv",sep="\t")
 
 # Exclude participants with excessive error rates
 participantsByErrorsBySlide = data %>% filter(correct != "none") %>% group_by(workerid) %>% summarise(ErrorsBySlide = mean(correct == "no"))
+
+
+#> median(participantsByErrorsBySlide$ErrorsBySlide)
+#[1] 0.01895735
+# Error rate for median participant
+
+#> mean(participantsByErrorsBySlide$ErrorsBySlide > 0.2)
+#[1] 0.01010101
+# Fraction of excluded subjects
+
 data = merge(data, participantsByErrorsBySlide, by=c("workerid"))
 data = data %>% filter(ErrorsBySlide < 0.2)
 
