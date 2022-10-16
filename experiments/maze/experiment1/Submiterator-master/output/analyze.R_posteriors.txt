@@ -3,15 +3,15 @@
 
 b_HasRC.C  0 
 
-b_EmbeddingBias.C:HasSC.C  0.004 
+b_EmbeddingBias.C:HasSC.C  0.0026875 
 # Second, there was an interaction
 # between embedding bias and the presence of a “that”-clause
 # (β = −0.09, 95% CrI [−0.15, −0.03], P (β > 0) = 0.0015).
 
 
-EmbeddingBiasAcrossTwoThree  0.002 
+EmbeddingBiasAcrossTwoThree  0.0036875 
 
-Effect Depth 221.4698   148.7888   295.6375 
+Effect Depth 218.1569   142.1421   293.6169 
 # First, reading times were higher in T HREE than in
 # T WO (β = 0.18, 95% credible interval [CrI] [0.13, 0.25],
 # P (β < 0) < 0.0001, effect in raw reading times: 217 ms,
@@ -19,20 +19,19 @@ Effect Depth 221.4698   148.7888   295.6375
 
 
 
-Fact/Report Difference across Two/Three -159.094   -312.7775   -1.704239 
-Fact/Report Difference in Two -107.3384   -285.4635   78.84051 
-Fact/Report Difference in Three -361.3396   -624.0462   -107.2415 
-Fact/Report Difference within One 349.7369   14.7227   721.8979 
+Fact/Report Difference across Two/Three -163.8281   -317.8059   -11.74246 
+Fact/Report Difference in Two -86.7399   -263.4872   94.18433 
+Fact/Report Difference in Three -397.7804   -672.2212   -142.6649 
+Fact/Report Difference within One 396.3855   57.6116   802.9299 
 
-Fact/Report-Like Difference across Two/Three -165.2371   -285.434   -44.92298
+Fact/Report-Like Difference across Two/Three -167.8772   -295.043   -45.02375 
 # (difference between “fact” and
 # “report”: −166 ms, 95% CrI [−297, −41] ms).
 
- 
-Fact/Report-Like Difference in Two -116.3072   -265.6589   32.2168 
-Fact/Report-Like Difference in Three -223.5859   -418.2205   -25.57089 
+Fact/Report-Like Difference in Two -101.7418   -257.7748   49.0233 
+Fact/Report-Like Difference in Three -246.9812   -441.2649   -53.9228 
 
-Fact/Report-Like Difference within One 273.3153   7.011105   539.5416 
+Fact/Report-Like Difference within One 290.3177   15.25269   559.4542 
 #the effect
 #of embedding bias was positive in the O NE condition (difference
 #between “fact” and “report”: 297 ms, 95% CrI [34, 566] ms).
