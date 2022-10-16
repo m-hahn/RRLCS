@@ -66,11 +66,11 @@ data$trial = data$trial - mean(data$trial, na.rm=TRUE)
 library(brms)
 model = (brm(LogRT ~ HasRC.C * compatible.C + HasRC.C * EmbeddingBias.C + HasSC.C * EmbeddingBias.C + compatible.C * EmbeddingBias.C + (1+compatible.C+HasSC.C+HasRC.C+HasRC.C*compatible.C|noun) + (1+compatible.C + EmbeddingBias.C + compatible.C * EmbeddingBias.C + HasSC.C + HasSC.C * EmbeddingBias.C + HasRC.C +  HasRC.C * compatible.C + HasRC.C * EmbeddingBias.C|workerid) + (1+compatible.C + EmbeddingBias.C + compatible.C * EmbeddingBias.C + HasSC.C +HasSC.C * EmbeddingBias.C + HasRC.C +  HasRC.C * compatible.C + HasRC.C * EmbeddingBias.C|item), data=data %>% filter(Region == "REGION_3_0"), cores=4, iter=8000))
 
-sink("output/analyze.R.txt")
+sink("output/analyze_Outliers.R.txt")
 print(summary(model))
 sink()
 
-write.table(summary(model)$fixed, file="output/analyze.R_fixed.tsv", sep="\t")
+write.table(summary(model)$fixed, file="output/analyze_Outliers.R_fixed.tsv", sep="\t")
 
 library(bayesplot)
 
@@ -100,7 +100,7 @@ plot = mcmc_areas(embeddingBiasSamples, prob=.95, n_dens=32, adjust=5)
 ggsave(plot, file="figures/posterior-histograms-EmbeddingBias_Outliers.pdf", width=5, height=5)
 
 
-sink("output/analyze.R_posteriors.txt")
+sink("output/analyze_Outliers.R_posteriors.txt")
 cat("b_HasRC.C ", mean(samples$b_HasRC.C<0), "\n")
 cat("b_compatible.C ", mean(samples$b_compatible.C<0), "\n")
 cat("b_EmbeddingBias.C:HasSC.C ", mean(samples[["b_EmbeddingBias.C:HasSC.C"]]>0), "\n")
