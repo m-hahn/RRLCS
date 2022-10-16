@@ -34,7 +34,24 @@ The simplified implementation fixes the prediction inference network after pretr
 * [Run full implementation](resource_rational_surprisal_VN3Stims_3_W_GPT2M_TPLf.py)
 
 ### Run on your own dataset
-The files `runModel_Simplified.py` and `runModel_Full.py` can be used to run the model on your own dataset. Refer to those files for instructions.
+We provide scripts for running the [simplified](runModel_Simplified.py) and [full](runModel_Full.py) model variants on your own dataset. Refer to those files for instructions.
+
+The workflow is as follows:
+
+* Install [Pytorch](https://pytorch.org/) and [Huggingface transformers](https://huggingface.co/docs/transformers/index). We developed the code under older versions, but have recently tested the model using Pytorch 1.12.1 and transformers 4.23.0. The code will assume that a GPU is available.
+* Download appropriate models [from Zenodo](https://zenodo.org/record/6602698). Models are provided in zip files by deletion rates; the parameter `delta` as described in the paper should be converted into the deletion rate 1-delta/20.
+* Within the script, replace `calibrationSentences` with the sentences of interest. Currently, this list consists of the fillers.
+* In the same script, replace `<<OUTPUT_PATH>>` with the correct path for storing the output.
+* Create symlinks at `CODEBOOKS_MEMORY` to the path where you stored the models; and at `CODEBOOKS` to the path where you stored the inference networks.
+* Run the corresponding  `RUNALL` script to get predictions across model runs.
+
+
+If you want to get predictions for specific regions (very typical for psycholinguistic research), you can instead use corresponding scripts for the [simplified](runModel_Simplified_ForRegion.py) and [full](runModel_Full_ForRegion.py) variants. This way, you can substantially reduce computation cost when there are many stimuli or conditions but only one or a few regions are of relevance.
+For this, you'll need to store your stimuli in a suitable TSV file. An example is provided [here](runModel_Simplified_ForRegion.py), around line 640.
+
+You can also create additional model runs, or train adaptations for the model, building off the scripts listed under `Optimize Model Parameters`. Please feel free to contact us for advice if you're considering this.
+
+
 
 ## Record and analyze retention probabilities
 

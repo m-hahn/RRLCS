@@ -156,7 +156,7 @@ We found similar values of the objective function across a wide range of hyperpa
 
 We pretrain the inference networks on samples from a uniform loss model, where each word is
 retrieved with 80\% probability. To eliminate potential artifacts of individual model runs, we constructed
-six reconstruction posterior models $q_\varphi$ and two prediction posterior models $q_\psi$, and randomly chose
+six reconstruction posterior models $q_\varphi$ and randomly chose
 one of each every time we constructed an optimized model $\theta$. These networks were trained on the full
 corpus (2.3 Billion words) with early stopping until convergence. This pretraining approach greatly
 reduces computation time and speeds up model convergence. We continue training the reconstruction
