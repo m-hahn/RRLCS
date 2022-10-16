@@ -25,8 +25,6 @@ participantsByErrorsBySlide = data %>% filter(correct != "none") %>% group_by(wo
 data = merge(data, participantsByErrorsBySlide, by=c("workerid"))
 data = data %>% filter(ErrorsBySlide < 0.2)
 
-# Only consider critical trials
-data = data %>% filter(condition != "filler")
 
 # Remove trials with incorrect responses
 data = data %>% filter(rt > 0, correct == "yes")
@@ -35,6 +33,8 @@ data = data %>% filter(rt > 0, correct == "yes")
 data = data %>% filter(rt < quantile(data$rt, 0.99))
 data = data %>% filter(rt > quantile(data$rt, 0.01))
 
+# Only consider critical trials
+data = data %>% filter(condition != "filler")
 
 # Load corpus counts (Wikipedia)
 nounFreqs = read.csv("../../../../materials/nouns/corpus_counts/wikipedia/results/results_counts4NEW.py.tsv", sep="\t")

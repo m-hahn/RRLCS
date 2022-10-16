@@ -1,0 +1,81 @@
+ Family: gaussian 
+  Links: mu = identity; sigma = identity 
+Formula: LogRT ~ HasRC.C + HasRC.C * EmbeddingBias.C + HasSC.C * EmbeddingBias.C + EmbeddingBias.C + (1 + HasSC.C + HasRC.C | noun) + (1 + EmbeddingBias.C + HasSC.C + HasSC.C * EmbeddingBias.C + HasRC.C + HasRC.C * EmbeddingBias.C | workerid) + (1 + EmbeddingBias.C + HasSC.C + HasSC.C * EmbeddingBias.C + HasRC.C + HasRC.C + HasRC.C * EmbeddingBias.C | item) 
+   Data: data %>% filter(Region == "REGION_3_0") (Number of observations: 926) 
+  Draws: 4 chains, each with iter = 8000; warmup = 4000; thin = 1;
+         total post-warmup draws = 16000
+
+Group-Level Effects: 
+~item (Number of levels: 32) 
+                                                     Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sd(Intercept)                                            0.25      0.04     0.18     0.33 1.00     3578     7323
+sd(EmbeddingBias.C)                                      0.02      0.02     0.00     0.06 1.00     4144     6190
+sd(HasSC.C)                                              0.10      0.06     0.01     0.22 1.00     3203     4727
+sd(HasRC.C)                                              0.08      0.04     0.00     0.17 1.00     4434     5767
+sd(EmbeddingBias.C:HasSC.C)                              0.06      0.04     0.00     0.15 1.00     3624     6261
+sd(EmbeddingBias.C:HasRC.C)                              0.04      0.03     0.00     0.10 1.00     6285     7502
+cor(Intercept,EmbeddingBias.C)                          -0.11      0.32    -0.69     0.55 1.00    17292    10758
+cor(Intercept,HasSC.C)                                   0.09      0.31    -0.53     0.67 1.00    16192    10879
+cor(EmbeddingBias.C,HasSC.C)                            -0.14      0.37    -0.78     0.61 1.00     7672    10171
+cor(Intercept,HasRC.C)                                  -0.22      0.31    -0.75     0.45 1.00    15692     8952
+cor(EmbeddingBias.C,HasRC.C)                            -0.14      0.37    -0.78     0.61 1.00     7281    10708
+cor(HasSC.C,HasRC.C)                                     0.08      0.37    -0.64     0.73 1.00    10171    10999
+cor(Intercept,EmbeddingBias.C:HasSC.C)                   0.01      0.32    -0.62     0.64 1.00    18650    10834
+cor(EmbeddingBias.C,EmbeddingBias.C:HasSC.C)            -0.03      0.37    -0.72     0.68 1.00    10924    11998
+cor(HasSC.C,EmbeddingBias.C:HasSC.C)                     0.09      0.37    -0.64     0.75 1.00    10337    12337
+cor(HasRC.C,EmbeddingBias.C:HasSC.C)                     0.07      0.37    -0.66     0.73 1.00    11657    13332
+cor(Intercept,EmbeddingBias.C:HasRC.C)                   0.16      0.35    -0.57     0.76 1.00    19861    11924
+cor(EmbeddingBias.C,EmbeddingBias.C:HasRC.C)             0.12      0.38    -0.64     0.77 1.00    11207    11749
+cor(HasSC.C,EmbeddingBias.C:HasRC.C)                    -0.03      0.37    -0.71     0.69 1.00    13583    12734
+cor(HasRC.C,EmbeddingBias.C:HasRC.C)                    -0.17      0.37    -0.80     0.60 1.00    10353    12984
+cor(EmbeddingBias.C:HasSC.C,EmbeddingBias.C:HasRC.C)    -0.03      0.37    -0.73     0.68 1.00    12867    13844
+
+~noun (Number of levels: 30) 
+                       Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sd(Intercept)              0.03      0.02     0.00     0.08 1.00     3630     5538
+sd(HasSC.C)                0.14      0.06     0.02     0.25 1.00     3918     2316
+sd(HasRC.C)                0.05      0.04     0.00     0.14 1.00     6222     8299
+cor(Intercept,HasSC.C)    -0.28      0.45    -0.93     0.71 1.00     3272     5006
+cor(Intercept,HasRC.C)     0.10      0.49    -0.83     0.90 1.00    10656    11158
+cor(HasSC.C,HasRC.C)       0.08      0.48    -0.82     0.89 1.00    13415    12378
+
+~workerid (Number of levels: 98) 
+                                                     Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sd(Intercept)                                            0.19      0.02     0.15     0.23 1.00     6402    10709
+sd(EmbeddingBias.C)                                      0.02      0.01     0.00     0.05 1.00     5505     7384
+sd(HasSC.C)                                              0.10      0.06     0.01     0.22 1.00     2828     4744
+sd(HasRC.C)                                              0.13      0.05     0.02     0.23 1.00     3003     2229
+sd(EmbeddingBias.C:HasSC.C)                              0.05      0.04     0.00     0.14 1.00     4323     6929
+sd(EmbeddingBias.C:HasRC.C)                              0.10      0.04     0.01     0.18 1.00     1888     1901
+cor(Intercept,EmbeddingBias.C)                           0.08      0.34    -0.60     0.70 1.00    19594    11667
+cor(Intercept,HasSC.C)                                   0.13      0.30    -0.51     0.69 1.00    13639     9776
+cor(EmbeddingBias.C,HasSC.C)                            -0.02      0.38    -0.72     0.70 1.00     6842    10350
+cor(Intercept,HasRC.C)                                   0.37      0.23    -0.14     0.78 1.00     9263     7582
+cor(EmbeddingBias.C,HasRC.C)                            -0.04      0.36    -0.71     0.67 1.00     4700     8164
+cor(HasSC.C,HasRC.C)                                     0.20      0.35    -0.55     0.78 1.00     4695     9066
+cor(Intercept,EmbeddingBias.C:HasSC.C)                  -0.20      0.33    -0.76     0.53 1.00    16265    11492
+cor(EmbeddingBias.C,EmbeddingBias.C:HasSC.C)            -0.01      0.38    -0.71     0.70 1.00    10509    11163
+cor(HasSC.C,EmbeddingBias.C:HasSC.C)                     0.07      0.37    -0.66     0.74 1.00    10643    11829
+cor(HasRC.C,EmbeddingBias.C:HasSC.C)                    -0.02      0.36    -0.70     0.67 1.00    13025    11495
+cor(Intercept,EmbeddingBias.C:HasRC.C)                   0.18      0.24    -0.33     0.63 1.00    11107     8916
+cor(EmbeddingBias.C,EmbeddingBias.C:HasRC.C)             0.01      0.37    -0.70     0.70 1.00     3830     7467
+cor(HasSC.C,EmbeddingBias.C:HasRC.C)                    -0.00      0.35    -0.66     0.67 1.00     4461     8055
+cor(HasRC.C,EmbeddingBias.C:HasRC.C)                    -0.17      0.32    -0.73     0.50 1.00     6060     8708
+cor(EmbeddingBias.C:HasSC.C,EmbeddingBias.C:HasRC.C)    -0.05      0.36    -0.72     0.64 1.00     6125    10662
+
+Population-Level Effects: 
+                        Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+Intercept                   7.08      0.05     6.99     7.18 1.00     2686     4820
+HasRC.C                     0.20      0.04     0.13     0.28 1.00    14073    12405
+EmbeddingBias.C            -0.03      0.01    -0.05    -0.00 1.00    14043    12278
+HasSC.C                    -0.03      0.05    -0.12     0.07 1.00    12486    11942
+HasRC.C:EmbeddingBias.C    -0.02      0.03    -0.08     0.03 1.00    14562    12808
+EmbeddingBias.C:HasSC.C    -0.12      0.04    -0.19    -0.05 1.00    11805    11347
+
+Family Specific Parameters: 
+      Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sigma     0.36      0.01     0.34     0.38 1.00     4401     9160
+
+Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+and Tail_ESS are effective sample size measures, and Rhat is the potential
+scale reduction factor on split chains (at convergence, Rhat = 1).

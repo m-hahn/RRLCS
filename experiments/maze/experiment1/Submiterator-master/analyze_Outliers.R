@@ -15,8 +15,6 @@ participantsByErrorsBySlide = data %>% filter(correct != "none") %>% group_by(wo
 data = merge(data, participantsByErrorsBySlide, by=c("workerid"))
 data = data %>% filter(ErrorsBySlide < 0.2)
 
-# Only consider critical trials
-data = data %>% filter(condition != "filler")
 
 # Remove trials with incorrect responses
 data = data %>% filter(rt > 0, correct == "yes")
@@ -25,6 +23,8 @@ data = data %>% filter(rt > 0, correct == "yes")
 data = data %>% filter(rt < 10000) #quantile(data$rt, 0.999))
 data = data %>% filter(rt > 200) #quantile(data$rt, 0.001))
 
+# Only consider critical trials
+data = data %>% filter(condition != "filler")
 
 # Load corpus counts (Wikipedia)
 nounFreqs = read.csv("../../../../materials/nouns/corpus_counts/wikipedia/results/results_counts4NEW.py.tsv", sep="\t")
@@ -60,13 +60,13 @@ data$trial = data$trial - mean(data$trial, na.rm=TRUE)
 
 # Mixed-Effects Analysis
 library(brms)
-model = (brm(LogRT ~ HasRC.C + HasRC.C * EmbeddingBias.C + HasSC.C * EmbeddingBias.C + EmbeddingBias.C + (1+HasSC.C+HasRC.C|noun) + (1 + EmbeddingBias.C + HasSC.C + HasSC.C * EmbeddingBias.C + HasRC.C+ HasRC.C * EmbeddingBias.C|workerid) + (1+EmbeddingBias.C + HasSC.C +HasSC.C * EmbeddingBias.C + HasRC.C +  HasRC.C + HasRC.C * EmbeddingBias.C|item), data=data %>% filter(Region == "REGION_3_0"), cores=4)) #iterations=8000, ))
+model = (brm(LogRT ~ HasRC.C + HasRC.C * EmbeddingBias.C + HasSC.C * EmbeddingBias.C + EmbeddingBias.C + (1+HasSC.C+HasRC.C|noun) + (1 + EmbeddingBias.C + HasSC.C + HasSC.C * EmbeddingBias.C + HasRC.C+ HasRC.C * EmbeddingBias.C|workerid) + (1+EmbeddingBias.C + HasSC.C +HasSC.C * EmbeddingBias.C + HasRC.C +  HasRC.C + HasRC.C * EmbeddingBias.C|item), data=data %>% filter(Region == "REGION_3_0"),  iter=8000))
 
-#sink("output/analyze.R.txt")
-#print(summary(model))
-#sink()
+sink("output/analyze_Outliers.R.txt")
+print(summary(model))
+sink()
 
-#write.table(summary(model)$fixed, file="output/analyze.R_fixed.tsv", sep="\t")
+write.table(summary(model)$fixed, file="output/analyze_Outliers.R_fixed.tsv", sep="\t")
 
 library(bayesplot)
 
@@ -93,7 +93,7 @@ plot = mcmc_areas(embeddingBiasSamples, prob=.95, n_dens=32, adjust=5)
 ggsave(plot, file="figures/posterior-histograms-EmbeddingBias_Outliers.pdf", width=5, height=5)
 
 
-#sink("output/analyze.R_posteriors.txt")
+sink("output/analyze_Outliers.R_posteriors.txt")
 cat("b_HasRC.C ", mean(samples$b_HasRC.C<0), "\n")
 cat("b_EmbeddingBias.C:HasSC.C ", mean(samples[["b_EmbeddingBias.C:HasSC.C"]]>0), "\n")
 cat("EmbeddingBiasAcrossTwoThree ", mean(embeddingBiasSamples$EmbeddingBiasAcrossTwoThree>0), "\n")
@@ -169,7 +169,7 @@ samples$FactReportDifferenceOne = FactReportDifferenceOne
 cat("Fact/Report-Like Difference within One", mean(FactReportDifferenceOne), " ", quantile(FactReportDifferenceOne, 0.025), " ", quantile(FactReportDifferenceOne, 0.975), "\n")
 
 
-#sink()
+sink()
 
 plot = mcmc_areas(samples, pars=c("DepthEffect", "FactReportDifferenceOne", "FactReportDifferenceTwo", "FactReportDifferenceThree"), prob=.95, n_dens=32, adjust=5)
 ggsave(plot, file="figures/posterior-histograms-RawEffects_Outliers.pdf", width=5, height=3)
