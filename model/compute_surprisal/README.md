@@ -47,7 +47,7 @@ The workflow is as follows:
 
 
 If you want to get predictions for specific regions (very typical for psycholinguistic research), you can instead use corresponding scripts for the [simplified](runModel_Simplified_ForRegion.py) and [full](runModel_Full_ForRegion.py) variants. This way, you can substantially reduce computation cost when there are many stimuli or conditions but only one or a few regions are of relevance.
-For this, you'll need to store your stimuli in a suitable TSV file. An example is provided [here](runModel_Simplified_ForRegion.py), around line 640.
+For this, you'll need to store your stimuli in a suitable TSV file. An example is provided [here](runModel_Simplified_ForRegion.py#L636).
 
 You can also create additional model runs, or train adaptations for the model, building off the scripts listed under `Optimize Model Parameters`. Please feel free to contact us for advice if you're considering this.
 
