@@ -39,7 +39,7 @@ We provide scripts for running the [simplified](runModel_Simplified.py) and [ful
 The workflow is as follows:
 
 * Install [Pytorch](https://pytorch.org/) and [Huggingface transformers](https://huggingface.co/docs/transformers/index). We developed the code under older versions, but have recently tested the model using Pytorch 1.12.1 and transformers 4.23.0. The code will assume that a GPU is available.
-* Download appropriate models [from Zenodo](https://zenodo.org/record/6602698). Models are provided in zip files by deletion rates; the parameter `delta` as described in the paper should be converted into the deletion rate 1-delta/20.
+* Download appropriate models [from Zenodo](https://zenodo.org/record/6602698). Models are provided in zip files by deletion rates; the parameter `delta` as described in the paper should be converted into the deletion rate 1-delta/20. Data for the relevant models is collected in the TSV files in [this directory](logsByScript).
 * Within the script, replace `calibrationSentences` with the sentences of interest. Currently, this list consists of the fillers.
 * In the same script, replace `<<OUTPUT_PATH>>` with the correct path for storing the output.
 * Create symlinks at `CODEBOOKS_MEMORY` to the path where you stored the models; and at `CODEBOOKS` to the path where you stored the inference networks.
