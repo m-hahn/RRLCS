@@ -18,8 +18,6 @@ participantsByErrorsBySlide = data %>% filter(correct != "none") %>% group_by(wo
 data = merge(data, participantsByErrorsBySlide, by=c("workerid"))
 data = data %>% filter(ErrorsBySlide < 0.2)
 
-# Only consider critical trials
-data = data %>% filter(condition != "filler")
 
 # Remove trials with incorrect responses
 data = data %>% filter(rt > 0, correct == "yes")
@@ -28,6 +26,8 @@ data = data %>% filter(rt > 0, correct == "yes")
 data = data %>% filter(rt < quantile(data$rt, 0.99))
 data = data %>% filter(rt > quantile(data$rt, 0.01))
 
+# Only consider critical trials
+data = data %>% filter(condition != "filler")
 
 # Load corpus counts (Wikipedia)
 nounFreqs = read.csv("../../../../materials/nouns/corpus_counts/wikipedia/results/results_counts4NEW.py.tsv", sep="\t")
@@ -64,7 +64,7 @@ data$trial = data$trial - mean(data$trial, na.rm=TRUE)
 
 # Mixed-Effects Analysis
 library(brms)
-model = (brm(LogRT ~ HasRC.C * compatible.C + HasRC.C * EmbeddingBias.C + HasSC.C * EmbeddingBias.C + compatible.C * EmbeddingBias.C + (1+compatible.C+HasSC.C+HasRC.C+HasRC.C*compatible.C|noun) + (1+compatible.C + EmbeddingBias.C + compatible.C * EmbeddingBias.C + HasSC.C + HasSC.C * EmbeddingBias.C + HasRC.C +  HasRC.C * compatible.C + HasRC.C * EmbeddingBias.C|workerid) + (1+compatible.C + EmbeddingBias.C + compatible.C * EmbeddingBias.C + HasSC.C +HasSC.C * EmbeddingBias.C + HasRC.C +  HasRC.C * compatible.C + HasRC.C * EmbeddingBias.C|item), data=data %>% filter(Region == "REGION_3_0"), cores=4, iter=8000))
+model = (brm(LogRT ~ HasRC.C * compatible.C + HasRC.C * EmbeddingBias.C + HasSC.C * EmbeddingBias.C + compatible.C * EmbeddingBias.C + (1+compatible.C+HasSC.C+HasRC.C+HasRC.C*compatible.C|noun) + (1+compatible.C + EmbeddingBias.C + compatible.C * EmbeddingBias.C + HasSC.C + HasSC.C * EmbeddingBias.C + HasRC.C +  HasRC.C * compatible.C + HasRC.C * EmbeddingBias.C|workerid) + (1+compatible.C + EmbeddingBias.C + compatible.C * EmbeddingBias.C + HasSC.C +HasSC.C * EmbeddingBias.C + HasRC.C +  HasRC.C * compatible.C + HasRC.C * EmbeddingBias.C|item), data=data %>% filter(Region == "REGION_3_0"), iter=8000))
 
 sink("output/analyze.R.txt")
 print(summary(model))
