@@ -30,11 +30,11 @@ The simplified implementation fixes the prediction inference network after pretr
 
 ### Fillers
 
-* [Run simplified implementation](resource_rational_surprisal_VN3Stims_3_W_GPT2M_Lf.py)
 * [Run full implementation](resource_rational_surprisal_VN3Stims_3_W_GPT2M_TPLf.py)
+* [Run simplified implementation](resource_rational_surprisal_VN3Stims_3_W_GPT2M_Lf.py)
 
 ### Run on your own dataset
-We provide scripts for running the [simplified](runModel_Simplified.py) and [full](runModel_Full.py) model variants on your own dataset. Please do feel free to get in touch to discuss your use case!
+We provide scripts for running  [model](runModel_Full.py) on your own dataset (also for the [simplified](runModel_Simplified.py) variant). Please do feel free to get in touch to discuss your use case before running -- we'll be happy to provide advice.
 
 The workflow is as follows:
 
@@ -46,7 +46,7 @@ The workflow is as follows:
 * Run the corresponding  `RUNALL` script to get predictions across model runs.
 
 
-If you want to get predictions for specific regions (very typical for psycholinguistic research), you can instead use corresponding scripts for the [simplified](runModel_Simplified_ForRegion.py) and [full](runModel_Full_ForRegion.py) variants. This way, you can substantially reduce computation cost when there are many stimuli or conditions but only one or a few regions are of relevance.
+If you want to get predictions for specific regions (very typical for psycholinguistic research), you can instead use corresponding [script](runModel_Full_ForRegion.py) (also for the [simplified](runModel_Simplified_ForRegion.py) variant). This way, you can substantially reduce computation cost when there are many stimuli or conditions but only one or a few regions are of relevance.
 For this, you'll need to store your stimuli in a suitable TSV file. An example is provided [here](runModel_Simplified_ForRegion.py#L636).
 
 You can also create additional model runs, or train adaptations for the model, building off the scripts listed under `Optimize Model Parameters`. Please feel free to contact us for advice if you're considering this.
