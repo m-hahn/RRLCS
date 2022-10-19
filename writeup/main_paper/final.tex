@@ -1,0 +1,600 @@
+\documentclass[9pt,twocolumn,twoside,lineno]{pnas-new}
+% Use the lineno option to display guide line numbers if required.
+
+\templatetype{pnasresearcharticle} % Choose template 
+% {pnasresearcharticle} = Template for a two-column research article
+% {pnasmathematics} %= Template for a one-column mathematics article
+% {pnasinvited} %= Template for a PNAS invited submission
+
+\usepackage{amssymb}% http://ctan.org/pkg/amssymb
+\usepackage{pifont}% http://ctan.org/pkg/pifont
+
+\usepackage[T1]{fontenc}
+\usepackage{grffile}
+\usepackage{latexsym}
+\usepackage{linguex}
+\usepackage{xcolor}
+\usepackage{url}
+
+\usepackage{fullpage}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+%\usepackage{tikz}
+
+\usepackage{multirow}
+\usepackage{amsmath,amssymb}
+\usepackage{natbib}
+\bibliographystyle{plainnat}
+
+\usepackage{amsfonts}
+
+% This is not strictly necessary, and may be commented out,
+% but it will improve the layout of the manuscript,
+% and will typically save some space.
+\usepackage{microtype}
+
+%\aclfinalcopy % Uncomment this line for the final submission
+%\def\aclpaperid{***} %  Enter the acl Paper ID here
+
+%\setlength\titlebox{5cm}
+% You can expand the titlebox if you need extra space
+% to show all the authors. Please do not make the titlebox
+% smaller than 5cm (the original size); we will check this
+% in the camera-ready version and ask you to change it back.
+
+%https://tex.stackexchange.com/questions/7032/good-way-to-make-textcircled-numbers
+%\usepackage{tikz}
+
+\usepackage{xcolor}
+
+
+\newcommand\BibTeX{B\textsc{ib}\TeX}
+
+\title{A Resource-Rational Model of Human Processing of Recursive Linguistic Structure}
+
+\author[a,b,2]{Michael Hahn}
+\author[c]{Richard Futrell}
+\author[d,1]{Roger Levy}
+\author[d,1]{Edward Gibson}
+
+\affil[a]{Department of Linguistics, Stanford University}
+\affil[b]{Collaborative Research Center 1102, Saarland University}
+\affil[c]{Department of Language Science, University of California, Irvine}
+\affil[d]{Department of Brain and Cognitive Sciences, Massachusetts Institute of Technology}
+
+% Please give the surname of the lead author for the running footer
+\leadauthor{Hahn} 
+
+
+\date{}
+
+\significancestatement{
+Researchers have long studied humans' difficulty in comprehending complex sentences as a window into the nature of human language processing. 
+ However, a unified theoretical account of comprehension difficulty has proven elusive.
+ We propose a unifying model based on resource-rational memory representations, which we scale to the rich statistical structure of language  using large-scale text data and contemporary machine learning methods.
+  The model makes fine-grained  predictions sharply different from those of existing models, which we  confirm in three behavioral experiments.
+  Taken together, our work shows how general cognitive principles, implemented using machine learning, predict fine-grained patterns in human language comprehension that previous theories cannot account for.
+}
+
+\authorcontributions{M.H., R.F., R.L., and E.G. designed research; M.H. performed research; and M.H., R.F., R.L., and E.G. wrote the paper.}
+\authordeclaration{The authors declare no competing interest.}
+
+
+\correspondingauthor{\textsuperscript{2}To whom correspondence should be addressed. E-mail: mhahn2@stanford.edu}
+\equalauthors{\textsuperscript{1}R.L. and E.G. contributed equally to this work. Order was determined by coin flip.}
+% Keywords are not mandatory, but authors are strongly encouraged to provide them. If provided, please include two to five keywords, separated by the pipe symbol, e.g:
+\keywords{Language processing $|$ Surprisal $|$ Resource-rationality} 
+
+\begin{abstract}
+
+A major goal of psycholinguistic theory is to account for the cognitive constraints limiting the speed and ease of language comprehension and production. Wide-ranging evidence demonstrates a key role for linguistic expectations: a word’s predictability, as measured by the information-theoretic quantity of surprisal, is a major determinant of processing difficulty. But surprisal under standard theories fails to predict the difficulty profile of an important class of linguistic patterns: the nested hierarchical structures made possible by recursion in human language. These nested structures are better accounted for by psycholinguistic theories of constrained working memory capacity. However, progress on theory unifying expectation-based and memory-based accounts has been limited. Here we present a new unified theory of a rational trade-off between precision of memory representations with ease of prediction, a scaled-up computational implementation using contemporary machine-learning methods, and experimental evidence in support of the theory’s distinctive predictions. We show that the theory makes nuanced and distinctive predictions for difficulty patterns in nested recursive structures predicted by neither expectation-based nor memory-based theories alone.
+These predictions are confirmed (a) in two language comprehension experiments in English, and (b) in sentence completions in English, Spanish, and German.
+More generally, our framework offers new, computationally explicit theory and methods for understanding how memory constraints and prediction interact in human language comprehension and production.
+
+\end{abstract}
+
+\dates{This manuscript was compiled on \today}
+\doi{\url{www.pnas.org/cgi/doi/10.1073/pnas.XXXXXXXXXX}}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{firststyle}
+\ifthenelse{\boolean{shortarticle}}{\ifthenelse{\boolean{singlecolumn}}{\abscontentformatted}{\abscontent}}{}
+
+Language expresses recursive thoughts via linear strings of words  \citep{chomsky1957syntactic}.
+Therefore, a central part of language comprehension is recovering a hierarchical structure from a linear sequence.
+While we do this seemingly without effort, it has long been observed that humans' ability to do so can run against limitations of short-term memory \citep{miller-finitary-1963}.
+Such limitations are of central importance to understanding the nature of human language processing, and have been an important subject of study \citep{frazier1985syntactic, Gibson1998LinguisticCL,  mcelree-memory-2003, Tabor2004EffectsOM,lewis2005activation,christiansen2009usage}.
+Human processing limitations often give rise to measurable, localized differences in comprehension difficulty between otherwise similar sentences, and modeling those difficulty differences has been a key aim of psycholinguistic research \citep{frazier1985syntactic, Gibson1998LinguisticCL,  mcelree-memory-2003, Tabor2004EffectsOM,lewis2005activation,christiansen2009usage}.
+However, it has proven challenging to develop a unified account of what makes different sentences easier or harder for humans to comprehend.
+
+
+Research has identified two seemingly disparate perspectives on what makes sentences hard to comprehend.
+Expectation-based models \citep{Hale2001APE,Levy2008ExpectationbasedSC} describe how context generates expectations about likely future input.
+According to such models, words are harder to process when they are harder to anticipate from preceding context.
+In contrast, memory-based models hold that difficulty of processing stems from limits on the ability to store representations of preceding context and to retrieve and integrate them with new input \citep{Gibson1998LinguisticCL, lewis2005activation, mcelree-memory-2003}.
+Both perspectives are supported by substantial bodies of empirical evidence \cite{Rayner1996EffectsOC, Staub2015TheEO,  Kuperberg2016WhatDW, Parker2017TheCR, Demberg2008DataFE, Boston2011ParallelPA}, and it has remained an open question how they can be theoretically and empirically reconciled \citep{Boston2011ParallelPA, Demberg2008DataFE, Parker2017TheCR}.
+
+
+Here, we develop a theory and implemented model reconciling expectation-based and memory-based theories, building on recent research that has proposed a key role for noise and uncertainty in modeling human mental representations of linguistic input \citep{Levy2009EyeME, gibson2013rational,ryskin-etal:2018comprehenders}. Whereas traditional models of language processing generally assume veridical context and input representations---the problem of sentence-level comprehension is cast as one of analyzing a known sequence of words to determine its structure and meaning and to predict future input---``noisy-channel'' language processing theory treats these representations as uncertain, and hypothesizes that analysis and prediction in human language processing approximates normative principles of Bayesian inference given these uncertain representations \citep{levy:2008emnlp,levy:2011acl}.
+These ideas have led to the proposal of unifying expectation-based and memory-based theories of processing difficulty through Lossy-Context Surprisal \citep{Futrell2020LossyContextSA}.
+Lossy-Context Surprisal posits that human processing difficulty is determined by expectations derived not from veridical context, but from probabilistic inference over imperfect memory representations of the context.
+In principle, this approach could acount for the predictions of both expectation-based and memory-based models:
+Words are easy to process when they are easy to anticipate -- as predicted by expectation-based models, but if the relevant contextual information is poorly represented in memory, 
+upcoming words may be difficult to anticipate correctly, yielding processing difficulty as predicted by traditional memory-based theories. 
+However, to date, many parts of this theory remain to be specified. The theory lacks an implemented specification of which aspects of preceding context are prone to memory loss, which is key to deriving testable predictions. Ideally, this specification should be based on deeper theoretical principles. Furthermore, no scaled implementation of noisy-channel processing has been available, which is necessary to make fine-grained predictions on the difficulty profiles of specific sentences.
+
+
+In this work, we present theoretical and empirical advances that address these limitations.
+On a theoretical level, we propose a new resource-rational model \cite{Lieder2019ResourcerationalAU} of fine-grained memory representations, based on the hypothesis that memory representations are optimized to minimize expected downstream processing effort given cognitive resource constraints.
+Combining this idea with Lossy-Context Surprisal as a processing difficulty metric leads to wide-ranging empirical predictions.
+In order to evaluate those predictions and understand them in detail, we implement the proposed model using contemporary neural network modeling, and fit it on large-scale text data, enabling the theory for the first time to make detailed predictions regarding human comprehension behavior for arbitrary natural language input.
+
+
+Our theory derives new predictions for difficulty patterns in human processing of recursive structures that neither expectation-based nor memory-based theories individually could account for. 
+Recursive structures, in particular cases of center embedding where sentences are nested inside one another, 
+are crucial for psycholinguistic theory because they reveal human limitations in processing the hierarchical structures of language 
+\citep{yngve1960, miller-finitary-1963, schlesinger1968sentence, fodor1967some, frazier1985syntactic, Gibson1998LinguisticCL}.
+Consider Figure~\ref{fig:predictions}A.
+In these sentences, varying numbers of sentences are embedded within each other.
+More center embedding leads to structures that are more difficult to process:
+Whereas (1) and (2) in Figure~\ref{fig:predictions}A are readily understood, (3) is considerably harder.
+Adding further levels of embedding would increase difficulty to the point of incomprehensibility.
+More levels of center embedding are rarer in language use \citep{karlsson:2007-constraints}, so purely expectation-based theories correctly predict that they are difficult overall, but fail to predict \emph{where} this difficulty manifests in human processing: when exiting the embedding, at the word \emph{was} in the examples of Figure~\ref{fig:predictions}A. If context were veridically represented and used to predict upcoming input, then exiting the embedding at this point should be exactly what is expected, and easy for human language processing.
+
+Some memory-based theories predict that exiting the embedding is difficult, on the basis that the complexity of the preceding context makes retrieval of the correct site for structural integration challenging \citep{lewis2005activation, Gibson1998LinguisticCL,mcelree-memory-2003}. Here, however, we present new experimental work showing that this difficulty is modulated by fine-grained differences in the context: for example, changing \emph{report} to \emph{fact} in the sentences of Figure~\ref{fig:predictions}A turns out to make exiting the center embedding easier. This phenomenon is not predicted by existing memory-based theories.
+
+
+
+Our new model is capable in principle of accounting for all these patterns. When memory representations are imperfect, rational comprehenders should reconstruct the context based on their knowledge of the statistics of the language. 
+Comprehenders' structural expectations of inputs should thus be biased towards contexts with high a-priori probability that are similar in form to the true contexts. 
+In a resource-rational model, this will particularly affect variants that differ in words that are normally easy to reconstruct from other parts of the context, such as high-frequency function words.
+For instance, we expect that a context such as ``\textit{the report \underline{that} the doctor annoyed the patient...}'' will compete with variants such as ``\textit{the report \underline{by} the doctor annoyed the patient...}'', where ``\textit{annoyed}'' is the verb belonging to the initial noun ``\textit{report}''.
+For such a nonveridical variant, no third verb is expected.
+Rational comprehenders with imperfect memory should thus be more likely to expect the final verb when such nonveridical versions with lower embedding depth have a lower a-priori probability.
+In contrast, when nonveridical variants have high a-priori probability, comprehenders should not expect the final verb, and comprehension will be disrupted when it is encountered.
+
+These expectations can be measured via native speakers' reading times when they encounter the final verb after the preceding context, or alternatively by providing native speakers with the preceding context and asking them to complete the sentence. We use both to test our theory.
+First, we show that a scaled-up implementation of our model indeed derives the predictions intuitively described above. Next, in two reading time experiments, we systematically vary the a-priori probability of the true context relative to structurally different variants.
+We find that, when the prior favors nonveridical variants, humans experience increased difficulty on processing the final verb.
+This contrast is a signature prediction of our proposed unifying model, and does not follow from existing models from either the expectation-based or the memory-based paradigms.
+Finally, in a production study in three languages (English, German, Spanish), we then show an analogous pattern in production, whereby humans are more likely to produce the correct number of verbs when structurally different variants have a lower a-priori probability.
+
+\section*{Formalization and Implementation}
+
+
+
+We describe the proposed model, Resource-Rational Lossy-Context Surprisal, in Figure~\ref{fig:model}.
+The model computes a retention probability \cite{Anderson1991ReflectionsOT,Anderson1989HumanMA} for each word in the past context, determined by (i) the word's identity, and (ii) how many words have been observed after observing it.
+The overall memory representation $c'$ then consists of the available words, and a placeholder symbol for those words that have not been retained.
+Via Bayes' rule and knowledge of the a-priori statistics of the language, $c'$ gives rise to a posterior $P(c|c')$ over possible contexts and thus a predictive distribution $P(w|c')$ over the next word.
+Processing difficulty on a word is determined by its degree of unpredictability from  $c'$, as measured by the information-theoretic quantity of surprisal: 
+\begin{equation}\label{eq:lc-surprisal}
+    -\log P(w|c') = -\log \sum_{c} P(w|c) P(c|c')
+\end{equation}
+We represent the a-priori statistics of English using GPT-2 \cite{Radford2019LanguageMA}, a large-scale neural network model that provides one of the strongest existing statistical models of English text.
+Retention probabilities are parameterized using a neural network acting on a context-independent vector representation of the word and its distance.
+We optimize retention probabilities to minimize the average model surprisal [\ref{eq:lc-surprisal}] over large-scale text data, subject to an upper bound on the average number of retained context words.
+We fitted the model for integer values of this bound from 0 to 20.
+Optimization uses text data from the English Wikipedia, unrelated to the center embeddings stimuli of interest (see Materials and Methods).
+The optimized retention probabilities prominently exhibit two key properties: words are more likely to be preserved when they are recent, and when they have lower word frequency (see SI Appendix, Figure 2). Both biases are well-documented in experimental research on human linguistic memory \cite{Ebbinghaus18852013MemoryAC, Gorman1961RecognitionMF, Glanzer1976AnalysisOT}.
+
+
+
+
+
+
+
+\section*{Predictions}
+We used Resource-Rational Lossy-Context Surprisal to derive three predictions about the processing of nested recursive structures (Figure~\ref{fig:predictions}B--C).
+First, recovering from more levels of embedding should be harder (blue vs green lines in Figure~\ref{fig:predictions}C). 
+This simple prediction is common to most models of memory in sentence comprehension, going back to the 1960s \citep{yngve1960, miller-finitary-1963, Gibson1998LinguisticCL,lewis2005activation}.
+Our model generally predicts it because more levels of embedding are less likely a priori, so that nonveridical variants with fewer levels tend to have higher a-priori probability.
+
+Second, recovering should be easier when semantic cues reinforce the correct dependency structure for the preceding embedding context.
+In particular, when semantic properties of the second-to-last verb unambiguously match it to the second noun (rather than the first one), the last verb should be easier to process (Figure~\ref{fig:predictions}B.2).
+For instance, in  Figure~\ref{fig:predictions}B.2, the a-priori probability is much higher for the veridical context (``\textit{the report that the doctor cured the patient...}'') than for nonveridical variants such as ``\textit{the report by the doctor cured the patient...}'', because, in the statistics of language use, ``doctor'' is much more likely to appear as the subject of ``cure'' than ``report'' is.
+Thus, changing the verb ``annoyed'' to ``cured''  should decrease processing effort on the final verb.
+Early work on center embedding already noted that semantic match between nouns and verbs made comprehension easier \citep{schlesinger1968sentence,fodor1967some,fodor1968some}, but as far as we know this effect has not been demonstrated in word-by-word reading times.
+While such an effect may be compatible with some memory-based theories \cite{lewis2005activation,Haussler2015AnIA}, it does not arise in existing computationally explicit models \cite{lewis2005activation}.
+
+Third, recovering should be easier when the nouns provide supporting statistical cues  (B.3 in Figure~\ref{fig:predictions}).
+Nouns vary strongly in the a-priori probability that they are followed by a \textit{that}-clause; this probability ranges from $\approx$ 70\% (\textit{fact}) to $\approx$ 0.7\% (\textit{report}).
+We use the term \textit{embedding bias} to denote the log-probability that a noun is followed by \textit{that}. 
+In Figure~\ref{fig:predictions}B.3, changing the noun ``report'' to ``fact'' decreases the probability of the nonveridical variants, which is again predicted to decrease processing effort on the final verb.
+In the \textsc{Two} and \textsc{Three} conditions, the third verb should be predicted more accurately when Embedding Bias is higher, as it increases the a-priori probability of the true context (descending blue and green lines in Figure~\ref{fig:predictions}C).
+This prediction does not follow from existing models, but is a straightforward consequence of our model.
+In the \textsc{One} condition, we expect the opposite pattern (ascending red line in Figure~\ref{fig:predictions}C), as nouns that embed a clause with a very high probability are less likely to be immediately followed by a verb.
+
+The resulting pattern of difficulty is sharply different from what is predicted by existing memory-based and expectation-based models (Figure \ref{fig:predictions}D, see SI Appendix, Section 7.1). We exemplify these using the Dependency Locality Theory (DLT) \cite{Gibson2000TheDL}, which asserts that difficulty stems from integrating long syntactic dependencies, and Surprisal Theory \cite{Hale2001APE,Levy2008ExpectationbasedSC}, which asserts that processing effort is proportional to surprisal derived from fully veridical context representations.
+The effect of the number of embedding levels, and the behavior of the \textsc{One} condition are predicted by existing memory-based and expectation-based theories, respectively.
+However, neither group of previous models predict effects of semantic compatibility or embedding bias in the \textsc{Two} and \textsc{Three} conditions.
+See SI Appendix, Section 7 for more on previous models.
+
+
+
+
+
+\begin{figure*}
+    \centering
+
+            \includegraphics[width=0.98\textwidth]{figure1.pdf}
+
+
+    \caption{
+    (A) Sentences exhibiting nested recursive structures (``center embeddings''), with one, two, or three noun-verb pairs. Difficulty differences between the sentences manifest as reading time differences on the underlined verbs. (B) Varying the probability of true contexts and surface-similar variants: We show a context requiring a verb in order to form a complete sentence, with surface-similar variants that do not require a verb in order to be complete (1). The relative prior probability $P(c)$  of the true context and the surface-similar variants can be modulated by changing the identity of the second-to-last verb (2) or the first noun (3).
+    Our model predicts that the final verb is easier to process when the true context has higher prior probability when compared to the variants.
+    (C) Conceptual predictions of our model for difficulty at the last verb: First, higher difficulty is predicted for the \textsc{Three} condition (blue) than the \textsc{Two} condition (green). Second, higher difficulty is predicted when the second-to-last verb is semantically compatible (\textit{``annoyed''} as opposed to \textit{``cured''}) with the first noun. Third, higher difficulty is predicted when the first noun has a lower embedding bias (\textit{``report''} as opposed to \textit{``fact''}).
+    In the \textsc{One} condition, an effect in the opposite direction is predicted.
+    (D) Predictions are sharply different from existing theories:
+    The DLT predicts that increasing levels of embedding should increase difficulty, but predicts no effects of embedding bias or compatibility. Surprisal Theory predicts that embedding bias impacts difficulty in the \textsc{One} condition, but not in the other conditions.} 
+    \label{fig:predictions}
+\end{figure*}
+
+
+
+
+
+\begin{figure*}
+    \centering
+    
+    
+    \includegraphics[width=0.9\textwidth]{figure2.pdf}
+    
+
+  \caption{Resource-Rational Lossy-Context Surprisal. We show the model as applied to a context ($c^*$) exhibiting a center embedding, and requiring a subsequent verb phrase (e.g., \textit{was surprising}) to form a complete sentence. The model determines retention probabilities for every word, varying with the number of intervening words. These together determine a distribution over lossy representations $c'$, for which we show one sample where three words have been lost. 
+  Combining knowledge of the retention probabilities with the a-priori statistics of the language, Bayesian inference determines  a posterior distribution over likely true contexts, given the lossy representation.
+  Each possible context leads to a distribution over possible next words. For example, the first context is likely to be followed by a verb, the second and third one are not.
+  The model posits that human comprehenders' expectations of the next word arise from marginalizing out the possible contexts $c$.
+  In this example, substantial probability is assigned to continuations without a verb, increasing comprehension difficulty when a verb is encountered.
+    }
+    \label{fig:model}
+\end{figure*}
+
+
+
+
+
+
+
+\section*{Experiment 1: Effect of Statistical Cues}
+
+We tested Resource-Rational Lossy-Context Surprisal by comparing model surprisal~(Equation \ref{eq:lc-surprisal}) against human processing difficulty on the final verb as reflected in reading times.
+
+We constructed 32 stimuli of the form in Figure~\ref{fig:predictions}A, each in three conditions (\textsc{One}, \textsc{Two}, \textsc{Three}), and crossed these with 58 different nouns varying in embedding bias (e.g., \textit{report}, \textit{fact}, \dots).
+We first derived predictions for Surprisal Theory and DLT for difficulty on the final verb (Figure~\ref{fig:rts}, left); we implemented Surprisal Theory using the same statistical model used for the prior in our model (GPT-2).
+We then computed Resource-Rational Lossy-Context Surprisal, varying the average number of context words retained during optimization of the retention probabilities from $0$ to $20$.
+Across the range of this parameter, the model traverses three distinct phases (see SI Appendix, Figure 4):
+When many ($\gtrsim 17$) words are retained, behavior is very similar to Surprisal Theory.
+When very few ($ \lesssim 4$) words are retained, 
+model surprisal is indistinctly flat in \textsc{Two} and \textsc{Three}.
+In between, the model exhibits the qualitative predictions described above; we show results for an average retention rate of 10 words in Figure~\ref{fig:rts} (left; see SI Appendix, Figure 4 for results at other retention rates):
+Model surprisal is higher in the \textsc{Three} condition than in \textsc{Two}, increases with embedding bias in the \textsc{One} condition, and decreases with embedding bias in the \textsc{Two} and \textsc{Three} conditions.
+
+
+
+
+
+We compared these predictions to human reading times, which we measured using the Maze paradigm \citep{Forster2009TheMT,Witzel2012ComparisonsOO,boyce2020maze}.
+In this paradigm, participants read sentences word by word, and choose between the correct next word and a distractor word that is matched in length and frequency but is very bad in the given context.
+The dependent variable of interest is the time it takes to make a choice (reaction time).
+The Maze paradigm enables higher temporal resolution and sensitivity than the traditional self-paced reading paradigm, which suffers from poor localization due to spillover effects and from noise due to inattentive participants, in particular in web-based experiments~\citep{Witzel2012ComparisonsOO,boyce2020maze}. 
+Different methods exist for creating distractor words; we use the A-Maze variant  in which distractors are automatically generated using
+large-scale statistical language models (\citep{boyce2020maze}, see Materials and Methods for details).
+
+We recruited 100 English native speakers, collecting data from 10 critical trials for each participant, interspersed with 30 fillers (see Materials and Methods for details).
+
+
+The median participant made an error on 1.9\% of words across both fillers and critical trials.
+The predetermined exclusion criterion for participants (incorrect response on $\geq$ 20\% of words) affected 1.0\% of participants. 
+We excluded trials from reading time analyses when the response on the critical word was wrong; this affected 5.2\% of the data (primarily in the difficult \textsc{Three} condition).
+See SI Appendix, Section 3.6 for analyses of errors and of reading times conditioned on errors.
+
+
+We show reading times on the last verb in Figure~\ref{fig:rts} (left).
+We analyzed these, after log-transformation, in a Bayesian linear-mixed effects regression, entering participants, items, and nouns as random effects (see Materials and Methods for details).
+The results exhibit the effects predicted by the Resource-Rational model.
+First, reading times were higher in \textsc{Three} than in \textsc{Two} ($\beta=0.18$, 95\% CrI $[0.13, 0.25]$, $P(\beta<0) < 0.0001$, effect in raw reading times: 217 ms, 95\% CrI $[144, 297]$ ms).
+Second, there was an interaction between embedding bias and the presence of a \textit{that}-clause ($\beta=-0.09$, 95\% CrI $[-0.15, -0.03]$, $P(\beta>0) = 0.0015$).
+Consistent with both our model and Surprisal Theory, the effect of embedding bias was positive in the \textsc{One} condition (difference between ``fact'' and ``report'': $297$ ms, 95\% CrI $[34,566]$ ms).
+However, as predicted by our model, this effect turned negative in the presence of a \textit{that}-clause (difference between ``fact'' and ``report'': $-166$ ms, 95\% CrI $[-297,-41]$ ms). 
+This effect agrees with model predictions, and is inconsistent with DLT or Surprisal Theory.
+An interaction between embedding depth and embedding bias can be demonstrated when pooling data across experiments (see SI Appendix, Sections 2.1 and 6.6).
+See SI Appendix, Section 3 for further analyses.
+
+
+
+We found that Resource-Rational Lossy-Context Surprisal improves over Surprisal Theory and DLT in predicting reading times not only in center embeddings, but also in the filler trials (see SI Appendix, Section 9). 
+
+
+We also examined predictions for a uniform memory model where each context word is retained with equal probability, assumed in prior work on lossy-context surprisal \cite{Futrell2020LossyContextSA}.
+This model predicts the effects of embedding bias, but not the effect of depth.
+We further compared to a window-based model where exactly the last $K$ words are available; this model predicts the effect of depth but not the negative effect of embedding bias.
+See SI Appendix, Section 2.2 for details.
+
+
+
+\begin{figure*}
+    \centering
+            \includegraphics[width=0.98\textwidth]{figure3.pdf}
+   
+    \caption{Model predictions and reading times.
+    We compare human reading times  with predictions from our model, and with the predictions of previous  theories of processing difficulty. 
+    For the human data, we show empirical per-noun means, and estimated reading times obtained from a trial-by-trial Bayesian mixed-effects analysis (see Materials and Methods), with posterior standard deviations for reading times at ``report'' (left end, low embedding bias) and ``fact'' (right end, high embedding bias).
+    The difficulty pattern predicted by the model, distinct from the predictions of previous theories, is borne out in the human reading time data.
+    }
+    \label{fig:rts}
+\end{figure*}
+
+
+
+
+
+
+\section*{Experiment 2: Effect of Semantic Cues}
+
+
+We next replicated Experiment 1 on a second set of items, and simultaneously tested the predicted effect of semantic compatibility.
+
+
+Beyond the two manipulations from Experiment 1, in the \textsc{Two} and \textsc{Three} conditions, we additionally varied the second-to-last verb phrase:
+In the \textsc{Compatible} condition, the first noun was a plausible subject (e.g., ``\textit{annoyed the patient}''); in the \textsc{Incompatible} condition it was not (e.g., ``\textit{cured the patient}'').
+In the \textsc{Compatible} condition, nonveridical versions such as ``\textit{the report \textit{by}}\dots''' should have a higher a-priori probability, making prediction of the last verb less accurate.
+We constructed 42 stimulus items.
+
+
+
+
+
+Figure~\ref{fig:rts} (right) shows predictions from the resource-rational model and previous theories for these items.
+In addition to the effects from Experiment 1, the model predicts higher difficulty in the \textsc{Compatible} condition, particularly within \textsc{Three}.
+Neither Surprisal Theory nor DLT predict any effect of compatibility.
+
+
+
+
+We collected reading time data from 200 participants, including both \textsc{Compatible} and \textsc{Incompatible} variants in the \textsc{Two} and \textsc{Three} conditions.
+In all other respects, experiment and data analysis were identical to Experiment 1.
+Reading times are shown in Figure~\ref{fig:rts}.
+The results of Experiment 1 were replicated:
+First, reading times were higher in \textsc{Three} than in \textsc{Two} ($\beta = 0.29$, $95\%$ CrI $[0.24,0.35]$, $P(\beta < 0) < 0.0001$; effect in raw reading times: 337 ms, $95\%$ CrI $[267, 411]$ ms).
+Second, there was an interaction between embedding bias and the presence of a \textit{that}-clause ($\beta = -0.06$, $95\%$ CrI $[-0.10, -0.024]$, $P(\beta >0) = 0.0007$).
+As in Experiment 1, the effect of embedding bias was positive in the \textsc{One} condition (difference between ``fact'' and ``report'': 193 ms, 95\% CrI $[37, 357]$ ms), and negative across the \textsc{Two} and  \textsc{Three} conditions (difference between ``fact'' and ``report'': $-105$ ms, 95\% CrI $[-194, -18]$ ms). 
+Third, in agreement with the model predictions, reading times were higher in the \textsc{Compatible} condition than the \textsc{Incompatible} condition ($\beta = 0.083$, $95\%$ CrI $[0.031, 0.136]$, $P(\beta < 0) = 0.0014$; effect in raw reading times: $96$ ms, 95 \% CrI $[36, 156]$ ms). 
+See SI Appendix, Section 3 for further analyses.
+Note that the effects of embedding bias and compatibility are numerically larger in the \textsc{Three} condition than in the \textsc{Two} condition; a meta-analysis shows that these differences are statistically meaningful in both reading times and in parts of the model's parameter space (see SI Appendix, Sections 2.1 and 6.6). 
+Numerical differences in the slope of embedding bias between \textsc{Compatible} and \textsc{Incompatible} were not statistically meaningful (see SI Appendix, Figure 23), nor were numerical differences in the intercept of the model predictions between the two experiments (see SI Appendix, Figure 6).
+
+
+
+
+See SI Appendix, Section 6 for converging evidence from preceding reading time studies (total N=501).
+We further replicated the effect of embedding bias on comprehension in two ratings studies (total N=230, see SI Appendix, Section 5).
+
+
+
+\section*{Experiment 3: Production Study}
+So far, we have confirmed the model predictions in reading times. Difficulty measured in reading times indicates that humans’ expectations are violated, but does not directly indicate what human expectations are. To provide a second test of human expectations, we turned to a production paradigm -- Cloze completion \cite{Taylor1953ClozePA} -- that has been used in language research in order to evaluate what words are expected immediately following a preamble. We use this method in order to evaluate the complexity of multiply nested structures, in order to measure how many verbs humans expect following a complex preamble. 
+
+We asked participants to complete contexts of the form ``\textit{The report that the doctor who the diplomat...}'' to a complete sentence.
+We expected participants to either produce grammatical completions with three verbs, such as ``\textit{...mistrusted cured the patient was surprising.}'', or ungrammatical versions with fewer verbs, such as ``\textit{...mistrusted was surprising.}''
+Resource-Rational Lossy-Context Surprisal predicts that the rate of such ungrammatical completions should be lower for nouns with high embedding bias (e.g., ``fact''), as these make it easier to recover the true context from imperfect memory representations (Figure~\ref{fig:human-prod}, left).
+Existing expectation-based and memory-based models do not predict that the rate of grammatical completions depends on embedding bias.
+
+
+
+
+We recruited 80 participants.
+Figure~\ref{fig:human-prod} shows the rate of incomplete completions (less than three verbs) as a function of embedding bias.
+As predicted, there was an effect of embedding bias on the rate of ungrammatical responses ($\beta = -0.32$, $95\%$ CrI $[-0.60, -0.05]$, $P(\beta > 0) = 0.0123$) in a trial-by-trial logistic mixed-effects analysis.
+
+
+We replicated this study in two more languages (Spanish and German), including one (German) where the difficulty of center embeddings has been found to be substantially weaker than in English \citep{vasishth2010short}.
+In Spanish, we targeted subject relative clauses (\textit{el hecho de que el director que}, ``the fact that the director who'') to avoid less natural subject-initial object relative clauses, simultaneously testing generalization to a different syntactic configuration.
+In German, we targeted embedded structures (e.g., \textit{Klaus hat erz{\"a}hlt, dass die Behauptung, dass der Student, den der Professor}, ``Klaus said that the claim that the student who the professor'') as they are known to increase difficulty to levels closer to English \cite{Haussler2015AnIA}. 
+
+
+We recruited 60 participants in each language.
+In both languages, the effect of Embedding Rate was estimated to be negative, with estimated effect sizes comparable to the English result (Spanish: $\beta = -0.23$, $95\%$ CrI $[-0.34, -0.12]$, $P(\beta>0) < 0.0003$; German: $\beta = -0.28$, $95 \%$ CrI $[-0.56, -0.03]$, $P(\beta>0) = 0.01738$).
+These results suggest that the -- previously undocumented -- effect of Embedding Bias on human expectations holds across different  languages, even when they vary in the overall difficulty of center embeddings.
+
+
+\begin{figure*}
+    \centering
+          \includegraphics[width=0.99\textwidth]{figure4.pdf}
+	\caption{Production experiments. 
+(A)	Conceptually, the model predicts that incomplete responses are most common for nouns with low embedding bias. In contrast, neither Surprisal Theory nor DLT predict any effect of embedding bias.
+(B-D)
+	While languages differ in the overall rate of ungrammatical responses, the prediction is borne out in each language. } 
+    \label{fig:human-prod}
+\end{figure*}
+
+
+
+
+
+\section*{Discussion}
+We have introduced a model of human language processing as resource-rational prediction, scaled to arbitrary input using contemporary machine learning methods.
+Aiming to reconcile memory- and expectation-based perspectives on human syntactic processing, the model not only recovers predictions of those prior theories where they are correct, but also predicts previously undocumented interactions between memory limitations and probabilistic expectations, which we confirmed in three behavioral experiments probing human processing of recursive structures.
+
+
+
+
+Our results reveal that the well-documented difficulty of integrating long linguistic dependencies, which is at the heart of existing memory-based models \cite{Gibson2000TheDL, mcelree-memory-2003, lewis2005activation}, is substantially modulated by probabilistic expectations:
+The comparison between the \textsc{One} and \textsc{Three} conditions shows that such locality effects can be weakened or even reversed when the nonlocal syntactic structure has high a-priori probability, a prediction that falls out naturally from our proposed unification of memory- and expectation-based perspectives.
+Our work further documents three prominent families of effects from the psycholinguistic literature in a single experiment and with a single model: locality effects (increased difficulty of \textsc{Three}), predictability effects (effect of embedding bias in the \textsc{One} condition), and semantic interference effects (effect of semantic compatibility).
+There has been considerable interest in a unified theoretical treatment of these families of effects; our work showcases how a single model can describe in detail how they interact. 
+One group of phenomena not targeted by our experiments is similarity-based interference \cite{Gordon2006SimilaritybasedID, Jger2017SimilaritybasedII}. Investigating whether it can also be accounted for with this modeling framework is an interesting problem for future research.
+
+
+Our resource-rational model is formally related to models in various domains.
+Classical work has shown that rational analysis of retention probabilities can account for fundamental properties of human memory \cite{Anderson1991ReflectionsOT,Anderson1989HumanMA}.
+Recent work \cite{Sims2016RatedistortionTA,Sims2012AnIO,Bates2020EfficientDC,Yoo2018StrategicAO} has formalized rational models of human working memory in some domains, such as visual working memory, using rate-distortion theory, an information-theoretic framework deriving high-fidelity encodings under resource constraints.
+The key difference between rate-distortion theory and our model is that the measure of economy is the fraction of \emph{available words} here, while it is the number of \emph{encoded bits} in rate-distortion theory.
+Applied to sentence comprehension, rate-distortion theory would lead to fully compressed ``gist'' representations of past context.
+Such fully compressed representations do not lead to the difficulty patterns observed in our experiments (see SI Appendix, Section 8 for details).
+On the other hand, our model is also a simplification in that it models the recent context as a sequence of words, which may underestimate the role of memory representations of longer context where individual words may have been forgotten but memory of meaning remains.
+Further advances in machine learning may allow inferring a more sophisticated format of memory representations from resource-rational optimization.
+
+
+In computer science, recursive structure is typically processed using stack-based data structures.
+Correspondingly, early models of human syntactic processing assumed bounds on the size of the stack, or the number of nodes that can be held in memory at the same time \citep{yngve1960,miller-finitary-1963}.
+Such models predict that deeper embedding is more difficult, but do not predict that difficulty is modulated by statistical or semantic cues.
+Unlike stack-based architectures, our theory assigns a major role to probabilistic cues in establishing recursive structure.
+In this respect, it agrees with more recent memory-based theories assuming that humans do not maintain data structures such as stacks, and instead establish syntactic structures using associative cue-based retrieval \citep{mcelree2000sentence,mcelree-memory-2003,Dyke2003DistinguishingEO,lewis2005activation}.
+Models of associative retrieval as currently implemented \citep{lewis2005activation} do not account for the distinctive difficulty patterns predicted by our model and observed in our experiments.
+Nonetheless, we view our theory as compatible with ideas from that literature.
+Our theory provides a computational-level model that makes predictions compatible with existing memory-based models, but -- unlike those models -- is rationally attuned to the rich statistical structure of language, enabling it to predict how memory limitations interact with probabilistic expectations.
+Our results suggest that identifying probabilistic versions of associative retrieval models, as algorithmic-level implementations of the resource-rational model described here, is an interesting problem for psycholinguistic research.
+See SI Appendix, Section 7.2 for more on the implications of our results for retrieval-based memory models.
+
+
+Our proposed unification of expectation-based and memory-based models rests on the idea that imperfect working memory representations are reconstructed rationally---though sometimes incorrectly---using knowledge of the statistics of the language.
+This idea has an important precedent in work on redintegration in verbal working memory  \cite[e.g.][]{Hulme1997WordfrequencyEO,Lewandowsky2000ARA,Schweickert1993AMP,Brown1995ModelingIL,Norris2019ChunkingAR}, a process whereby degraded short-term memory is restored using knowledge from long-term memory. This has been applied to memory for word lists \cite[e.g.][]{Lewandowsky2000ARA,Schweickert1993AMP,Brown1995ModelingIL,Norris2019ChunkingAR} and more recently memory for syntactic patterns \cite{Jones2018DoesSB}.
+Our model provides an account of such processes grounded in Bayesian inference constrained by resource-rationality.
+There are also models where working memory is treated not as a component of memory of its own, but as emergent from the interaction of processing and long-term memory \cite{Cowan1993ActivationAA,Postle2006WorkingMA}.
+For such models, our results provide data on how long-term knowledge informs processing.
+
+Our experiments capitalize on statistical correlates of syntactic structures in order to probe how probabilistic expectations interact with memory constraints. 
+This has some parallels in prior work on expectation-based models that showed how correlations such as between animacy and relative clause type impact processing in ways not accounted for by existing memory-based accounts \cite[e.g.][]{Gennari2008SemanticII,Hsiao2016ProductionPC,Gennari2012AnimacyAC}. Our work expands on this line of work by articulating an implemented theory of the interaction between memory constraints and probabilistic expectation.
+
+
+Our model has a free parameter $\delta$, the average number of retained words. We assumed a single value in deriving predictions and comparing to human reading times. Fitting it for individual subjects and understanding its relationship to established measures of individual differences is an interesting problem for future research.
+
+
+
+
+
+Connectionist models of human syntactic processing \citep{christiansen1999toward,christiansen2009usage,MacDonald2002ReassessingWM, frank2016cross} aim to describe human processing using expectations derived from neural network representations, and have been proposed to model effects related to both memory limitations and probabilistic expectations.
+However, the differences between plain surprisal as computed by GPT-2 and resource-rational lossy-context surprisal show that human-like memory limitations need not emerge automatically in connectionist models.
+
+We have shown how a model of resource-rational language processing can be scaled to the rich statistical structure of natural language.
+Our machine learning-based method may open the door to fitting sophisticated rational models on natural input statistics also in other domains of human cognition.
+
+The generality of our model also suggests that similar phenomena might exist outside of language:
+Whenever humans process input that is too complex for all its parts to be attended to simultaneously, processing should be impacted by the statistical structure of similar inputs.
+
+
+
+
+
+
+
+\matmethods{
+
+
+\paragraph{Nouns}
+We collected nouns that can take a sentential complement using the Penn Treebank~\citep{marcus-building-1993}, the English Web Treebank~\citep{silveira2014a}, the AnCoRA treebank~\citep{taule2008ancora} of Spanish, and the HDT Treebank \citep{,volker2019hdt} of German.
+We estimated embedding bias as the log-probability that ``the NOUN'' was followed by ``that'' using the English Wikipedia (2.3B words), the German Wikipedia (800M words), and the Spanish Wikipedia (500M words).
+See SI Appendix Section 11 for details.
+We validated the English estimates using two other large corpora of American and British English (see SI Appendix Section 10.1).
+
+
+
+\paragraph{Model}
+Resource-Rational Lossy-Context Surprisal is defined by a family of retention probabilities $\theta = \{q_{w, i} : i,w\}$ where $w$ ranges over words and $i=1,\dots, N$, where $N=20$ is the maximum context length considered, long enough to accommodate all contexts appearing in the experiments.
+We parameterize $q_{w,i}$ using a neural network that combines a past word's identity and the number of intervening words to output a retention probability (see SI Appendix, Section 1.1).
+The model $\theta$ gives rise to the likelihood $p(c'|c)$ and thus the posterior $p(c|c')$.
+It is chosen to minimize average next-word surprisal for the resulting next-word posterior $p(w|c')$:
+\begin{equation}\label{eq:objective}
+	\min_\theta \mathbb{E}_{c^*w} \mathbb{E}_{c' \sim p(c'|c^*)} \left[- \log p(w|c')\right]
+\end{equation}
+where $c^* w$ are contexts in the corpus together with the next words,
+subject to the constraint that the average number of retained words does not exceed some bound $\delta \in \mathbb{R}_+$:
+\begin{equation}\label{eq:constraint}
+	\mathbb{E}_{c^*} \mathbb{E}_{c' \sim p(c'|c^*)} \left[\#\{i : c'_i \neq \text{\textsc{erased}}\}\right] \leq \delta
+\end{equation}
+where $c' = c'_1 \dots c'_N$ consists of the retained words and \textsc{erased} for the other words.
+
+
+For each integer $0 < \delta < 20$, we solved~[\ref{eq:objective}--\ref{eq:constraint}] on large-scale text data from the English Wikipedia using machine learning methods based on neural networks (see SI Appendix, Section 1.3).
+We fitted the model on contexts $c^*$ of length $N=20$ of continuous text, across sentence boundaries marked by periods.
+We removed commas from the text data as they might provide confounding cues to hierarchical structure.
+
+We show results at $\delta=10$ in Figure~\ref{fig:rts}; see SI Appendix, Figure 4 for results at other values of $\delta$.
+
+
+We estimated the a-priori statistics of English with GPT-2, and used importance sampling to compute model surprisal [\ref{eq:lc-surprisal}] (see SI Appendix, Section 1.4).
+Due to high computational resource demands, we used the Medium-sized version of GPT-2 (345M parameters).
+Larger versions of GPT-2 provide equivalent predictions in the zero-loss setting (see SI Appendix, Section 7.1).
+
+\paragraph{Experimental Setup for Reading Time Studies}
+The experimental protocol for all human subjects studies reported in this paper was approved by the Institutional Review Board at Stanford University. Informed consent was obtained from all participants.
+Each participant was presented with 10 critical trials. In both experiments, 2 trials were in \textsc{One}, and 4 trials in \textsc{Two} and \textsc{Three} each.
+In Experiment 2, half of the \textsc{Two} and \textsc{Three} trials were each in the \textsc{Compatible} (\textsc{Incompatible}) condition.
+We chose a small number of critical trials to minimize any effect of statistical adaptation to center embeddings during the task.
+To maximize statistical precision, we selected 15 nouns with very high embedding bias and 15 nouns with very low embedding bias (see SI Appendix, Figure 36).
+For each participant, we sampled 5 nouns with high embedding bias and 5 nouns with a low value, and matched these with the 10 critical trials.
+For each participant, we also sampled 30 fillers from a pool of 56 fillers from a prior reading time study of center embeddings \cite{vasishth2010short}.
+To remove semantic anomalies due to presupposition violations (e.g., ?{``}\textit{the fact was wrong}''), we classified the nouns into entailing (e.g., ``fact''), non-entailing neutral (e.g., ``claim'') and non-entailing negative (e.g., ``accusation'') nouns, and classified items for compatibility with each of these three classes (see SI Appendix, Section 11).
+For each participant, we matched the 10 nouns with semantically compatible items.
+
+For the Maze task, we generated distractors automatically \cite{boyce2020maze} using the Gulordava language model \citep{gulordava2018colorless}: these distractors have extremely low contextual probability, while being matched with the target word in frequency and length.
+Distractors were matched across conditions, except within the second-to-last verb phrase in the \textsc{(In)Compatible} conditions in Experiment 2.
+In particular, distractors were matched on the critical word across all conditions.
+
+
+
+
+When participants made a mistake (i.e., chose the distractor), they were prompted to retry the current word \cite{boyce2020amlap}.
+Reaction times on such trials were excluded; this choice did not impact conclusions (see SI Appendix, Section 3.6).
+
+For each subject, trials were presented in random order so that no two critical trials were adjacent.
+Participants, recruited on the Prolific academic platform, took a median of 13 minutes, and received \pounds 2.20 ($\approx 3$ USD).
+
+
+
+
+\paragraph{Data Analysis for Reading Times}
+We excluded trials (a) with an incorrect answer, (b) from participants who made errors on more than 20\% of words, and (c) below or above 99\% of all reading times. See SI Appendix, Section 3.6 for robustness to (a), and SI Appendix, Section 3.7 for robustness to (c). 
+We then analyzed log-transformed reading times on the final verb using Bayesian mixed-effects models implemented in Stan \cite{carpenter2017stan} using brms \cite{buerkner2017brms}.
+See SI Appendix, Section 3.3 for priors and robustness to prior choices.
+We used contrast coding with the presence of a \textit{that} clause (\textsc{One} vs. \textsc{Two}/\textsc{Three}), depth (\textsc{Two} vs. \textsc{Three}), and the compatibility manipulation  (\textsc{Compatible} vs \textsc{Incompatible}) as contrasts.
+Embedding bias was centered, and all non-vacuous binary interactions were added as fixed effects (see SI Appendix, Section 3.2).
+We included the maximal random effects structure justified by the experimental design, entering items, nouns, and participants as random effects.
+In order to estimate effects in raw reading times (milliseconds), we first computed the predicted log-transformed reading time in both conditions (e.g., \textsc{Compatible} and \textsc{Incompatible}), then transformed both into milliseconds by exponentiating, and computed the difference (see SI Appendix, Section 3.4 for further details).
+In Figure~\ref{fig:rts}, we plot the posterior mean of the predicted reading time in all conditions for nouns with embedding bias matching ``\textit{fact}'' or ``\textit{report}''.
+Error bars represent the posterior standard deviation.
+
+
+\paragraph{Details for Production Study}
+We constructed 28 items of the form ``The XXX that the diplomat who the senator'', and selected 12 nouns, six each with very high or very low embedding bias.
+For each participant, we randomly paired items and nouns.
+The 12 critical trials were presented in random order with 27 fillers.
+A linguist manually annotated, for each completion provided, whether the correct number of verb phrases (three) was produced.
+The annotator was blind to the identity of the noun.
+
+In Spanish and German, we selected 20 nouns with very high or very low embedding bias in each language, sampling 6 high- and-low embedding bias nouns for each participant.
+As in the English version, we randomly matched 12 items with the 12 sampled nouns for each participant.
+Fillers were translated from the English experiment.
+
+In German, we further constructed 12 matrix sentences (e.g., ``Klaus said that''), and randomly matched them with items and nouns for each participant.
+
+
+We conducted a Bayesian trial-by-trial logistic mixed-effects analysis with embedding bias as a fixed effect, and random effects of nouns, items, participants, and (in German) matrix sentences.  See SI Appendix, Section 4 for details.
+
+\paragraph{Data Availability}
+All code and results are freely available at \url{https://gitlab.com/m-hahn/resource-rational-surprisal}.
+
+}
+
+
+
+
+
+
+\showmatmethods{} 
+
+\acknow{We thank the editor and the reviewers for their constructive feedback, which helped improve the manuscript. We are also grateful to Judith Degen, Tiwalayo Eisape, Hailin Hao, Jennifer Hu, Dan Jurafsky, Peng Qian, Cory Shain, Shravan Vasishth, Tom Wasow, Ethan Wilcox, and the audience at the 2020 CUNY Conference on Sentence Processing for helpful discussion and feedback.}
+
+\showacknow{}
+
+\bibliography{literature}
+
+
+
+
+\end{document}
+
