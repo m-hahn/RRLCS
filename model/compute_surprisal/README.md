@@ -34,7 +34,7 @@ The simplified implementation fixes the prediction inference network after pretr
 * [Run full implementation](resource_rational_surprisal_VN3Stims_3_W_GPT2M_TPLf.py)
 
 ### Run on your own dataset
-We provide scripts for running the [simplified](runModel_Simplified.py) and [full](runModel_Full.py) model variants on your own dataset. Please do feel free to get in touch to discuss your use case!
+We provide scripts for running the [simplified](runModel_Simplified.py) and [full](runModel_Full.py) model variants on your own dataset. Please do feel free to get in touch to discuss your use case before running -- we'll be happy to provide advice.
 
 The workflow is as follows:
 
