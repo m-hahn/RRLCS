@@ -7,7 +7,7 @@ In all cases, the script ending in `_RUNALL.py` iteratevely runs the other scrip
 Refer to section ''Run on your own dataset'' to run the model on other datasets.
 
 Models come with two parameters: `predictability_weight` and `deletion_rate`.
-`predictaility_weight` is always 1.0 in the relevant models, except for SI Appendix Figure 27, which corresponds to 0.0.
+`predictability_weight` is always 1.0 in the relevant models, except for SI Appendix Figure 27, which corresponds to 0.0.
 The repository includes code and data for a more general model interpolating between the two models.
 `deletion_rate` is the fraction of context words forgotten on average; 0 corresponds to delta=20 (i.e., full GPT-2, operationalizing Surprisal Theory); 1 corresponds to delta=0 (i.e., unigram surprisal).
 
