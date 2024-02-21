@@ -7,11 +7,11 @@ data_E1 = read.csv("prepareMeansByExperiment_E0_ByStimuli.R.tsv", quote='"', sep
 
 data = rbind(data_E1)
 
-counts = unique(read.csv("~/forgetting/corpus_counts/wikipedia/results/counts4NEW_Processed.tsv", sep="\t"))
+counts = unique(read.csv("../../../materials/nouns/corpus_counts/wikipedia/results/counts4NEW_Processed.tsv", sep="\t"))
 counts$Ratio = log(counts$CountThat) - log(counts$CountBare)
 
 
-scrc = read.csv("~/forgetting/corpus_counts/wikipedia/RC_annotate/results/collectResults.py.tsv", sep="\t")
+scrc = read.csv("../../../materials/nouns/corpus_counts/wikipedia/RC_annotate/results/collectResults.py.tsv", sep="\t")
 scrc = scrc %>% mutate(SC_Bias = (SC+1e-10)/(SC+RC+Other+3e-10))
 scrc = scrc %>% mutate(Log_SC_Bias = log(SC_Bias))
 
