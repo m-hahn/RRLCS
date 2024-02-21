@@ -1194,7 +1194,7 @@ topNouns = list(set(topNouns))
 
 
 
-with open("../../../../forgetting/corpus_counts/wikipedia/results/counts4NEW_Processed.tsv", "r") as inFile:
+with open("../../materials/nouns/corpus_counts/wikipedia/results/counts4NEW_Processed.tsv", "r") as inFile:
    counts = [x.replace('"', '').split("\t") for x in inFile.read().strip().split("\n")]
    header = ["LineNum"] + counts[0]
    assert len(header) == len(counts[1])
