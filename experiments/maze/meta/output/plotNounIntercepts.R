@@ -71,7 +71,7 @@ ggsave(plot, file="plotNounIntercepts_R_SurprisalRT.pdf", height=6, width=6)
 #data$Noun = data$noun
 #
 #
-#nounsCOCA = read.csv("../../../../../../forgetting/corpus_counts/COCA/results/results_counts4.py.tsv", sep="\t")                                                                                                            
+#nounsCOCA = read.csv("../../../../..//materials/nouns/corpus_counts/COCA/results/results_counts4.py.tsv", sep="\t")                                                                                                            
 #nounsCOCA$Conditional_COCA = log(nounsCOCA$theNOUNthat/nounsCOCA$theNOUN)                                                                                                                                   
 #nounsCOCA$Marginal_COCA = log(nounsCOCA$theNOUN)
 #nounsCOCA$Joint_COCA = log(nounsCOCA$theNOUNthat)
@@ -83,7 +83,7 @@ ggsave(plot, file="plotNounIntercepts_R_SurprisalRT.pdf", height=6, width=6)
 #data$Marginal_COCA.C = data$Marginal_COCA - mean(data$Marginal_COCA, na.rm=TRUE)
 #data$Joint_COCA.C = data$Joint_COCA - mean(data$Joint_COCA, na.rm=TRUE)
 #
-#nounsukwac = read.csv("../../../../../../forgetting/corpus_counts/ukwac/results/results_counts4.py.tsv", sep="\t")                                                                                                          
+#nounsukwac = read.csv("../../../../..//materials/nouns/corpus_counts/ukwac/results/results_counts4.py.tsv", sep="\t")                                                                                                          
 #nounsukwac$Conditional_ukwac = log(nounsukwac$theNOUNthat/nounsukwac$theNOUN)                                                                                                                               
 #nounsukwac$Marginal_ukwac = log(nounsukwac$theNOUN)
 #nounsukwac$Joint_ukwac = log(nounsukwac$theNOUNthat)

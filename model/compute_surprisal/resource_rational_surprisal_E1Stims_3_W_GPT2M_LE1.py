@@ -933,7 +933,7 @@ nounsAndVerbs = []
 import re
 items_counter = 0
 
-with open(f"../../../../forgetting-gitlab/experiment/maze/228-noise-pro/Submiterator-master/items_Experiment1_working.txt.csv", "r") as inFile:
+with open(f"../../experiments/maze/experiment1/Submiterator-master/items_Experiment1_working.txt.csv", "r") as inFile:
    for line in inFile:
       line = line.strip().split("\t")
       if len(line[0]) == 1 and len(line) > 1 and  line[0] == "1":
