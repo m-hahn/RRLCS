@@ -54,7 +54,7 @@ topNouns.append('Die Tatsache')
 
 
 
-with open("/home/user/forgetting/corpus_counts/german/output/counts.tsv", "r") as inFile:
+with open("../corpus_counts/german/output/counts.tsv", "r") as inFile:
    counts = [x.split("\t") for x in inFile.read().strip().split("\n")]
    header = counts[0]
    header = dict(list(zip(header, range(len(header)))))
