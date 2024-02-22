@@ -7,13 +7,13 @@ data_E2 = read.csv("/juice/scr/mhahn/reinforce-logs-both-short/full-logs-tsv-per
 
 data = rbind(data_E0, data_E1, data_E2)
 
-nounFreqs = read.csv("/u/scr/mhahn/CODE/forgetting/corpus_counts/wikipedia/results/results_counts4.py.tsv", sep="\t")
+nounFreqs = read.csv("../../../../materials/nouns/corpus_counts/wikipedia/results/results_counts4.py.tsv", sep="\t")
 nounFreqs$LCount = log(1+nounFreqs$Count)
 nounFreqs$Condition = paste(nounFreqs$HasThat, nounFreqs$Capital, "False", sep="_")
 nounFreqs = as.data.frame(unique(nounFreqs) %>% select(Noun, Condition, LCount) %>% group_by(Noun) %>% spread(Condition, LCount)) %>% rename(noun = Noun)
 
 
-nounFreqs2 = read.csv("/u/scr/mhahn/CODE/forgetting/corpus_counts/wikipedia/results/archive/perNounCounts.csv") %>% mutate(X=NULL, ForgettingVerbLogOdds=NULL, ForgettingMiddleVerbLogOdds=NULL) %>% rename(noun = Noun) %>% mutate(True_True_True=NULL,True_False_True=NULL)
+nounFreqs2 = read.csv("../../../../materials/nouns/corpus_counts/wikipedia/results/archive/perNounCounts.csv") %>% mutate(X=NULL, ForgettingVerbLogOdds=NULL, ForgettingMiddleVerbLogOdds=NULL) %>% rename(noun = Noun) %>% mutate(True_True_True=NULL,True_False_True=NULL)
 
 nounFreqs = unique(rbind(nounFreqs, nounFreqs2))
 nounFreqs = nounFreqs[!duplicated(nounFreqs$noun),]
