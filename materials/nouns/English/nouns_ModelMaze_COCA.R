@@ -49,5 +49,6 @@ ggsave(plot, file="figures/All_nouns_byType_COCA.pdf", height=12, width=6)
 
 nouns[order(nouns$Conditional),]
 
+write.table(nouns[order(nouns$Conditional),], file="output/All_nouns_byType_COCA.tsv", sep="\t", quote=F, row.names=F)
 
 
