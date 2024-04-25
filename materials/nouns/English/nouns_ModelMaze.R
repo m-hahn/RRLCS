@@ -8,7 +8,7 @@ nounsRatingsL = unique(nounsRatingsL)
 nounsMaze = as.character(unique(read.csv("../../../experiments/maze/experiment2/Submiterator-master/trials-experiment2.tsv", sep="\t")$noun))
 nouns = unique(c(as.character(nounsRatingsL), as.character(nounsMaze)))
 nouns = nouns[!is.na(nouns)]
-nouns_counts = unique(read.csv("~/forgetting/corpus_counts/wikipedia/results/counts4NEW_Processed.tsv", sep="\t"))
+nouns_counts = unique(read.csv("../corpus_counts/wikipedia/results/counts4NEW_Processed.tsv", sep="\t"))
 # this should be all TRUE
 print(nouns %in% nouns_counts$Noun)
 nouns = nouns_counts[nouns_counts$Noun %in% nouns,]
@@ -38,6 +38,9 @@ nouns = merge(nouns, types, by=c("Noun"), all.x=TRUE)
 nouns$Noun = factor(nouns$Noun, levels=nouns$Noun[order(nouns$Conditional)])
 
 nouns$InMaze = ifelse((nouns$Noun %in% nounsMaze), "bold", "plain")
+
+
+
 
 library(ggrepel)
 plot = ggplot(nouns, aes(x=Conditional, y=Noun, color=Group, group=Group)) + geom_point() + geom_errorbarh(aes(xmax=CIUpper, xmin=CILower, color=Group)) + geom_text_repel(aes(label=Noun, fontface=InMaze)) + theme_bw() + theme(axis.text.x=element_text(angle = 90)) + xlab("Embedding Bias") + ylab(NULL)
