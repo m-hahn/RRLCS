@@ -3,6 +3,8 @@ import sys
 import random
 from collections import defaultdict
 import argparse
+import pandas as pd
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--language", dest="language", type=str, default="english")
 parser.add_argument("--load-from-lm", dest="load_from_lm", type=str, default=964163553) # language model taking noised input # Amortized Prediction Posterior
@@ -86,7 +88,15 @@ print(sys.argv)
 print(args)
 print(args, file=sys.stderr)
 
-
+# ---- Finetuning control ----
+FINETUNE_MEMORY = True   
+# For a short sanity run:
+if args.tuning == 1:
+    maxUpdates = 20000   
+else:
+    maxUpdates = 200000
+# ----------------------------
+    
 
 import corpusIteratorWikiWords
 
@@ -122,19 +132,19 @@ class Autoencoder:
   """ Amortized Reconstruction Posterior """
   def __init__(self):
     # This model describes a standard sequence-to-sequence LSTM model with attention
-    self.rnn_encoder = torch.nn.LSTM(2*args.word_embedding_size, int(args.hidden_dim_autoencoder/2.0), args.layer_num, bidirectional=True).cuda()
-    self.rnn_decoder = torch.nn.LSTM(2*args.word_embedding_size, args.hidden_dim_autoencoder, args.layer_num).cuda()
-    self.output = torch.nn.Linear(args.hidden_dim_autoencoder, len(itos)+3).cuda()
-    self.word_embeddings = torch.nn.Embedding(num_embeddings=len(itos)+3, embedding_dim=2*args.word_embedding_size).cuda()
+    self.rnn_encoder = torch.nn.LSTM(2*args.word_embedding_size, int(args.hidden_dim_autoencoder/2.0), args.layer_num, bidirectional=True)
+    self.rnn_decoder = torch.nn.LSTM(2*args.word_embedding_size, args.hidden_dim_autoencoder, args.layer_num)
+    self.output = torch.nn.Linear(args.hidden_dim_autoencoder, len(itos)+3)
+    self.word_embeddings = torch.nn.Embedding(num_embeddings=len(itos)+3, embedding_dim=2*args.word_embedding_size)
     self.logsoftmax = torch.nn.LogSoftmax(dim=2)
     self.softmax = torch.nn.Softmax(dim=2)
     self.attention_softmax = torch.nn.Softmax(dim=1)
     self.train_loss = torch.nn.NLLLoss(ignore_index=0)
     self.print_loss = torch.nn.NLLLoss(size_average=False, reduce=False, ignore_index=0)
     self.char_dropout = torch.nn.Dropout2d(p=args.char_dropout_prob)
-    self.attention_proj = torch.nn.Linear(args.hidden_dim_autoencoder, args.hidden_dim_autoencoder, bias=False).cuda()
+    self.attention_proj = torch.nn.Linear(args.hidden_dim_autoencoder, args.hidden_dim_autoencoder, bias=False)
     self.attention_proj.weight.data.fill_(0)
-    self.output_mlp = torch.nn.Linear(2*args.hidden_dim_autoencoder, args.hidden_dim_autoencoder).cuda()
+    self.output_mlp = torch.nn.Linear(2*args.hidden_dim_autoencoder, args.hidden_dim_autoencoder)
     self.relu = torch.nn.ReLU()
     self.modules_autoencoder = [self.rnn_decoder, self.rnn_encoder, self.output, self.word_embeddings, self.attention_proj, self.output_mlp]
 
@@ -169,10 +179,10 @@ class Autoencoder:
 class LanguageModel:
    """ Amortized Prediction Posterior """
    def __init__(self):
-      self.rnn = torch.nn.LSTM(2*args.word_embedding_size, args.hidden_dim_lm, args.layer_num).cuda()
+      self.rnn = torch.nn.LSTM(2*args.word_embedding_size, args.hidden_dim_lm, args.layer_num)
       self.rnn_drop = self.rnn
-      self.output = torch.nn.Linear(args.hidden_dim_lm, len(itos)+3).cuda()
-      self.word_embeddings = torch.nn.Embedding(num_embeddings=len(itos)+3, embedding_dim=2*args.word_embedding_size).cuda()
+      self.output = torch.nn.Linear(args.hidden_dim_lm, len(itos)+3)
+      self.word_embeddings = torch.nn.Embedding(num_embeddings=len(itos)+3, embedding_dim=2*args.word_embedding_size)
       self.logsoftmax = torch.nn.LogSoftmax(dim=2)
       self.train_loss = torch.nn.NLLLoss(ignore_index=0)
       self.print_loss = torch.nn.NLLLoss(size_average=False, reduce=False, ignore_index=0)
@@ -182,38 +192,48 @@ class LanguageModel:
    def forward(self, input_tensor_noised, target_tensor_full, NUMBER_OF_REPLICATES):
        lm_embedded = self.word_embeddings(input_tensor_noised)
        lm_out, lm_hidden = self.rnn_drop(lm_embedded, None)
-       lm_out = lm_out[-1:]
+       #lm_out = lm_out[-1:]
        lm_logits = self.output(lm_out) 
        lm_log_probs = self.logsoftmax(lm_logits)
- 
+       target_log_probs = lm_log_probs.gather(2, target_tensor_full.unsqueeze(2)).squeeze(2)
+            # Surprisal is negative log-probability
+       surprisals = -target_log_probs 
+       #print("Target log prob shape:", target_log_probs.shape)
+       #print("Surprisals shape:", surprisals.shape)
        # Prediction Loss 
-       lm_lossTensor = self.print_loss(lm_log_probs.view(-1, len(itos)+3), target_tensor_full[-1].view(-1)).view(-1, NUMBER_OF_REPLICATES) # , args.batchSize is 1
-       return lm_lossTensor 
+       #lm_lossTensor = self.print_loss(lm_log_probs.view(-1, len(itos)+3), target_tensor_full[-1].view(-1)).view(-1, NUMBER_OF_REPLICATES) # , args.batchSize is 1
+       lm_lossTensor = self.print_loss(
+        lm_log_probs.view(-1, len(itos)+3),
+        target_tensor_full.reshape(-1)
+        ).view(-1, NUMBER_OF_REPLICATES)
+       #print("First 5 target token indices:", target_tensor_full[:5, 0])
+       #print("Surprisal for first 5 tokens:", (-target_log_probs[:5, 0]).tolist())
+       return lm_lossTensor, surprisals
 
 
 
 class MemoryModel():
   """ Noise Model """
   def __init__(self):
-     self.memory_mlp_inner = torch.nn.Linear(2*args.word_embedding_size, 500).cuda()
-     self.memory_mlp_inner_bilinear = torch.nn.Linear(2*args.word_embedding_size, 500).cuda()
-     self.memory_mlp_inner_from_pos = torch.nn.Linear(256, 500).cuda()
-     self.memory_mlp_outer = torch.nn.Linear(500, 1).cuda()
+     self.memory_mlp_inner = torch.nn.Linear(2*args.word_embedding_size, 500)
+     self.memory_mlp_inner_bilinear = torch.nn.Linear(2*args.word_embedding_size, 500)
+     self.memory_mlp_inner_from_pos = torch.nn.Linear(256, 500)
+     self.memory_mlp_outer = torch.nn.Linear(500, 1)
      self.sigmoid = torch.nn.Sigmoid()
      self.relu = torch.nn.ReLU()
-     self.positional_embeddings = torch.nn.Embedding(num_embeddings=args.sequence_length+2, embedding_dim=256).cuda()
-     self.memory_word_pos_inter = torch.nn.Linear(256, 1, bias=False).cuda()
+     self.positional_embeddings = torch.nn.Embedding(num_embeddings=args.sequence_length+2, embedding_dim=256)
+     self.memory_word_pos_inter = torch.nn.Linear(256, 1, bias=False)
      self.memory_word_pos_inter.weight.data.fill_(0)
-     self.perword_baseline_inner = torch.nn.Linear(2*args.word_embedding_size, 500).cuda()
-     self.perword_baseline_outer = torch.nn.Linear(500, 1).cuda()
-     self.memory_bilinear = torch.nn.Linear(256, 500, bias=False).cuda()
+     self.perword_baseline_inner = torch.nn.Linear(2*args.word_embedding_size, 500)
+     self.perword_baseline_outer = torch.nn.Linear(500, 1)
+     self.memory_bilinear = torch.nn.Linear(256, 500, bias=False)
      self.memory_bilinear.weight.data.fill_(0)
      self.modules_memory = [self.memory_mlp_inner, self.memory_mlp_outer, self.memory_mlp_inner_from_pos, self.positional_embeddings, self.perword_baseline_inner, self.perword_baseline_outer, self.memory_word_pos_inter, self.memory_bilinear, self.memory_mlp_inner_bilinear]
   def forward(self, numeric):
       embedded_everything_mem = lm.word_embeddings(numeric).detach()
 
       # Positional embeddings
-      numeric_positions = torch.LongTensor(range(args.sequence_length+1)).cuda().unsqueeze(1)
+      numeric_positions = torch.LongTensor(range(args.sequence_length+1)).unsqueeze(1)
       embedded_positions = self.positional_embeddings(numeric_positions)
       numeric_embedded = self.memory_word_pos_inter(embedded_positions)
 
@@ -239,6 +259,17 @@ autoencoder = Autoencoder()
 lm = LanguageModel()
 memory = MemoryModel()
 
+
+
+# load checkpoint
+#checkpoint = torch.load("/Users/teodorakamova/Documents/Uni Saarland/Work/RRLCS/resource-rational-surprisal/model/data/char-lm-ud-stationary_12_SuperLong_WithAutoencoder_WithEx_Samples_Short_Combination_Subseq_VeryLong_WithSurp12_NormJudg_Short_Cond_Shift_NoComma_Bugfix_VN3Stims_3_W_GPT2M_S.py_665599355.model", map_location="cpu",weights_only=False)
+checkpoint = torch.load("../data/pred_1.0_del_0.5_simple/char-lm-ud-stationary_12_SuperLong_WithAutoencoder_WithEx_Samples_Short_Combination_Subseq_VeryLong_WithSurp12_NormJudg_Short_Cond_Shift_NoComma_Bugfix_VN3Stims_3_W_GPT2M_S.py_710757217.model", map_location="cpu",weights_only=False)
+print("Keys in checkpoint:", checkpoint.keys())
+
+# Load the memory model (the forgetting rates model)
+for i, module in enumerate(memory.modules_memory):
+    module.load_state_dict(checkpoint["memory"][i])
+
 # Set up optimization
 
 # Parameters for the retention probabilities
@@ -251,7 +282,7 @@ parameters_memory_cached = [x for x in parameters_memory()]
 
 
 # Dual parameter (for Lagrangian dual)
-dual_weight = torch.cuda.FloatTensor([1.0])
+dual_weight = torch.FloatTensor([1.0])
 dual_weight.requires_grad=True
 
 # Parameters for inference networks
@@ -274,13 +305,29 @@ optim_memory = torch.optim.SGD(parameters_memory(), lr=args.learning_rate_memory
 
 ###############################################3
 
+# Freeze LM to finetune memory 
+if FINETUNE_MEMORY:
+    lm.rnn_drop.train(False)
+    for module in lm.modules_lm:
+      module.train(False)
 
+    # Disable gradients for LM parameters so optimizer won't update them
+    for p in parameters_lm():
+        p.requires_grad = False
+
+    # Ensure memory parameters are trainable
+    for p in parameters_memory():
+        p.requires_grad = True
+
+    print("FINETUNE_MEMORY: LM frozen; memory will be trained.")
+###############################################
+    
 # Load pretrained prior and amortized posteriors
 
 # Amortized Reconstruction Posterior
 if args.load_from_autoencoder is not None:
   print(args.load_from_autoencoder)
-  checkpoint = torch.load("/u/scr/mhahn/CODEBOOKS/"+args.language+"_"+"autoencoder2_mlp_bidir_Erasure_SelectiveLoss.py"+"_code_"+str(args.load_from_autoencoder)+".txt")
+  checkpoint = torch.load("../data/"+args.language+"_"+"autoencoder2_mlp_bidir_Erasure_SelectiveLoss.py"+"_code_"+str(args.load_from_autoencoder)+".txt", map_location=torch.device('cpu'))
   for i in range(len(checkpoint["components"])):
       autoencoder.modules_autoencoder[i].load_state_dict(checkpoint["components"][i])
   del checkpoint
@@ -288,12 +335,79 @@ if args.load_from_autoencoder is not None:
 # Amortized Prediction Posterior
 if args.load_from_lm is not None:
   lm_file = "char-lm-ud-stationary-vocab-wiki-nospaces-bptt-2-words_NoNewWeightDrop_NoChars_Erasure.py"
-  checkpoint = torch.load("/u/scr/mhahn/CODEBOOKS/"+args.language+"_"+lm_file+"_code_"+str(args.load_from_lm)+".txt")
+  checkpoint = torch.load("../data/"+args.language+"_"+lm_file+"_code_"+str(args.load_from_lm)+".txt", map_location=torch.device('cpu'))
   for i in range(len(checkpoint["components"])):
       lm.modules_lm[i].load_state_dict(checkpoint["components"][i])
   del checkpoint
 
 from torch.autograd import Variable
+
+
+
+def compute_surprisal(memory, lm, test_data, epoch, output_dir="surprisal_outputs"):
+    # Compute surprisal on each epoch
+    os.makedirs(output_dir, exist_ok=True)
+    results = []
+    total_surprisal = 0.0
+    count = 0
+
+    with torch.no_grad():
+        for sid, batch in enumerate(test_data):
+            if isinstance(batch, tuple):
+                numeric, _ = batch
+            else:
+                numeric = batch
+
+            # Expand numeric to replicates dimension
+            if numeric.dim() == 1:
+               numeric = numeric.view(-1, 1)
+            numeric = numeric.repeat(1, args.NUMBER_OF_REPLICATES)
+
+            #Get memory hidden activations
+            memory_hidden, _ = memory.forward(numeric)
+
+            #Sample deletion mask
+            memory_filter = torch.bernoulli(memory_hidden).squeeze(2)
+
+            #Keep punctuation 
+            punctuation = (((numeric.unsqueeze(0) == PUNCTUATION.view(len(punctuation_list), 1, 1)).long().sum(dim=0)).bool())
+
+            #Construct noised input
+            numeric_noised = torch.where(torch.logical_or(punctuation, memory_filter == 1), numeric, 0 * numeric)
+
+
+            #print("Input shape:", numeric_noised[:-1].shape)
+            #print("Target shape:", numeric[1:].shape)
+            
+            # Run LM forward pass to get surprisal 
+            lm_lossTensor, surprisals = lm.forward(
+                numeric_noised[:-1],  # input
+                numeric[1:],          # target
+                NUMBER_OF_REPLICATES=args.NUMBER_OF_REPLICATES
+            )
+
+            surprisals = surprisals.detach().cpu().numpy()
+
+            seq_len, batch_size = surprisals.shape
+
+            for b in range(batch_size):        
+               for t in range(seq_len):       
+                  results.append({
+                        "epoch": epoch,
+                        "sentence_id": sid,
+                        "replicate_id": b,      
+                        "token_index": t + 1,  
+                        "surprisal": float(surprisals[t, b])
+                  })
+                  total_surprisal += float(surprisals[t, b])
+                  count += 1
+    # Save into CSV
+    df = pd.DataFrame(results)
+    out_path = os.path.join(output_dir, f"surprisal_epoch_{epoch}.csv")
+    df.to_csv(out_path, index=False)
+    print(f"Saved surprisal results for epoch {epoch} to {out_path}")
+    #assert False
+    return total_surprisal / count if count > 0 else 0.0
 
 
 
@@ -303,7 +417,9 @@ def prepareDatasetChunks(data, train=True):
       print("Prepare chunks")
       numerified = []
       numerified_chars = []
+      print("looking at data", data)
       for chunk in data:
+       print("line in prepareDatasetChunks", chunk)
        for char in chunk:
          count += 1
          if char == ",": # Skip commas
@@ -318,12 +434,13 @@ def prepareDatasetChunks(data, train=True):
 
          numerified = numerified[cutoff:]
        
-         numerifiedCurrent = torch.LongTensor(numerifiedCurrent).view(args.batchSize, -1, sequenceLengthHere).transpose(0,1).transpose(1,2).cuda()
+         numerifiedCurrent = torch.LongTensor(numerifiedCurrent).view(args.batchSize, -1, sequenceLengthHere).transpose(0,1).transpose(1,2)
 
          numberOfSequences = numerifiedCurrent.size()[0]
          for i in range(numberOfSequences):
              yield numerifiedCurrent[i], None
        else:
+         print("Chunk length:", len(numerified))
          print("Skipping")
 
 
@@ -363,7 +480,7 @@ def product(x):
 # This also includes OOV, in order to exclude posterior samples with undefined
 #  syntactic structure.
 punctuation_list = [".", "OOV", '"', "(", ")", "'", '"', ":", ",", "'s", "[", "]"]
-PUNCTUATION = torch.LongTensor([stoi_total[x] for x in punctuation_list]).cuda()
+PUNCTUATION = torch.LongTensor([stoi_total[x] for x in punctuation_list])
 
 def forward(numeric, train=True, printHere=False, provideAttention=False, onlyProvideMemoryResult=False, NUMBER_OF_REPLICATES=args.NUMBER_OF_REPLICATES, expandReplicates=True):
       """ Forward pass through the entire model
@@ -428,7 +545,7 @@ def forward(numeric, train=True, printHere=False, provideAttention=False, onlyPr
       ##########################################
       # Step 6: Run prediction inference network
       if args.predictability_weight > 0:
-       lm_lossTensor = lm.forward(input_tensor_noised, target_tensor_full, NUMBER_OF_REPLICATES)
+       lm_lossTensor, _ = lm.forward(input_tensor_noised, target_tensor_full, NUMBER_OF_REPLICATES)
       ##########################################
       ##########################################
 
@@ -519,32 +636,56 @@ def forward(numeric, train=True, printHere=False, provideAttention=False, onlyPr
 
 
 def backward(loss, printHere):
-      """ An optimization step for the resource-rational objective function """
-      # Set stored gradients to zero
-      optim_autoencoder.zero_grad()
-      optim_memory.zero_grad()
+    """ An optimization step for the resource-rational objective function """
+    # Reset grads for optimizers we will actually call
+    optim_memory.zero_grad()
+    optim_autoencoder.zero_grad()
 
-      if dual_weight.grad is not None:
-         dual_weight.grad.data.fill_(0.0)
-      if printHere:
-         print(loss)
-      # Calculate new gradients
-      loss.backward()
-      # Gradient clipping
-      torch.nn.utils.clip_grad_value_(parameters_memory_cached, 5.0) #, norm_type="inf")
-      if TRAIN_LM:
-         assert False
-         torch.nn.utils.clip_grad_value_(parameters_lm_cached, 5.0) #, norm_type="inf")
+    if dual_weight.grad is not None:
+       dual_weight.grad.data.fill_(0.0)
+    if printHere:
+       print(loss)
+    # Compute gradients
+    loss.backward()
 
-      # Adapt parameters
-      optim_autoencoder.step()
-      optim_memory.step()
+    # Gradient clipping (only meaningful for memory params here)
+    torch.nn.utils.clip_grad_value_(parameters_memory_cached, 5.0)
 
-#      print(dual_weight.grad)
-      dual_weight.data.add_(args.dual_learning_rate*dual_weight.grad.data)
- #     print("W", dual_weight)
-      dual_weight.data.clamp_(min=0)
-  #    print("W", dual_weight)
+    # Update parameters
+    optim_autoencoder.step()
+    optim_memory.step()
+
+    # Update dual weight
+    if dual_weight.grad is not None:
+        dual_weight.data.add_(args.dual_learning_rate * dual_weight.grad.data)
+        dual_weight.data.clamp_(min=0)
+# def backward(loss, printHere):
+#       """ An optimization step for the resource-rational objective function """
+#       # Set stored gradients to zero
+#       optim_autoencoder.zero_grad()
+#       optim_memory.zero_grad()
+
+#       if dual_weight.grad is not None:
+#          dual_weight.grad.data.fill_(0.0)
+#       if printHere:
+#          print(loss)
+#       # Calculate new gradients
+#       loss.backward()
+#       # Gradient clipping
+#       torch.nn.utils.clip_grad_value_(parameters_memory_cached, 5.0) #, norm_type="inf")
+#       if TRAIN_LM:
+#          assert False
+#          torch.nn.utils.clip_grad_value_(parameters_lm_cached, 5.0) #, norm_type="inf")
+
+#       # Adapt parameters
+#       optim_autoencoder.step()
+#       optim_memory.step()
+
+# #      print(dual_weight.grad)
+#       dual_weight.data.add_(args.dual_learning_rate*dual_weight.grad.data)
+#  #     print("W", dual_weight)
+#       dual_weight.data.clamp_(min=0)
+#   #    print("W", dual_weight)
 
 lossHasBeenBad = 0
 
@@ -559,7 +700,7 @@ updatesCount = 0
 maxUpdates = 200000 if args.tuning == 1 else 10000000000
 
 def showAttention(word, POS=""):
-    attention = forward(torch.cuda.LongTensor([stoi[word]+3 for _ in range(args.sequence_length+1)]).view(-1, 1), train=True, printHere=True, provideAttention=True)
+    attention = forward(torch.LongTensor([stoi[word]+3 for _ in range(args.sequence_length+1)]).view(-1, 1), train=True, printHere=True, provideAttention=True)
     attention = attention[:,0,0]
     print(*(["SCORES", word, "\t"]+[round(x,2) for x in list(attention.cpu().data.numpy())] + (["POS="+POS] if POS != "" else [])))
 
@@ -596,17 +737,33 @@ startTimeTotal = time.time()
 startTimePredictions = time.time()
 startTimeTotal = time.time()
 
-for epoch in range(1000):
+for epoch in range(20):
    print(epoch)
 
    # Get training data
-   training_data = corpusIteratorWikiWords.training(args.language)
+   train_sentences, test_sentences, train_df, test_df = corpusIteratorWikiWords.finetune(args.language)
    print("Got data")
-   training_chars = prepareDatasetChunks(training_data, train=True)
-
-
+   train_sentences = list(train_sentences)
+   for x in train_sentences:
+     print(x)
+#   quit()
+   training_chars = prepareDatasetChunks(train_sentences, train=True)
+   print(len(list(training_chars)))
+#   quit()
+   #print("Number of batches to process", len(list(test_chars)))
+   assert len(train_df) + len(test_df) == 384
    # Set the model up for training
-   lm.rnn_drop.train(True)
+   if FINETUNE_MEMORY:
+      lm.rnn_drop.train(False)   # freeze LM (dropout off)
+      memory.modules_memory  
+      # Put memory in train mode 
+      for m in memory.modules_memory:
+         try:
+               m.train(True)
+         except:
+               pass
+   else:
+      lm.rnn_drop.train(True)
    startTime = time.time()
    trainChars = 0
    counter = 0
@@ -620,13 +777,12 @@ for epoch in range(1000):
       if updatesCount == maxUpdates:
 
 
-          
        # Record reconstructions and surprisals
-       with open("/u/scr/mhahn/reinforce-logs-both-short/full-logs/"+__file__+"_"+str(args.myID), "w") as outFile:
+       with open("/.tmp", "w") as outFile:
          startTimePredictions = time.time()
 
          sys.stdout = outFile
-         print(updatesCount, "Slurm", os.environ["SLURM_JOB_ID"])
+         print(updatesCount, "Slurm", os.environ.get("SLURM_JOB_ID", "local_run"))
          print(args)
          print("=========================")
          showAttention("the")
@@ -708,19 +864,29 @@ for epoch in range(1000):
          showAttention("he", POS="Pron")
          showAttention("she", POS="Pron")
          sys.stdout = STDOUT
-
+      print(counter)
      # Get a batch from the training set
       try:
+         print("GETTING NEXT")
          numeric, _ = next(training_chars)
       except StopIteration:
          break
       printHere = (counter % 50 == 0)
       # Run this through the model: forward pass of the resource-rational objective function
       loss, charCounts = forward(numeric, printHere=printHere, train=True)
+
+      # Check if memory parameters changed 
+      #params_before = [p.clone() for p in parameters_memory()]
+
       # Calculate gradients and update parameters
       backward(loss, printHere)
 
+      
 
+      # After backward and optimizer step, parameters are updated
+      #params_after = [p for p in parameters_memory()]
+      #for i, (b, a) in enumerate(zip(params_before, params_after)):
+         #print(f"Memory param {i} changed:", not torch.equal(b, a))
       # Bad learning rate parameters might make the loss explode. In this case, stop.
       if lossHasBeenBad > 100:
           print("Loss exploding, has been bad for a while")
@@ -734,14 +900,19 @@ for epoch in range(1000):
           print(devLosses)
           print("Words per sec "+str(trainChars/(time.time()-startTime)))
           print(args.learning_rate_memory, args.learning_rate_autoencoder)
-          print("Slurm", os.environ["SLURM_JOB_ID"])
+          print("Slurm", os.environ.get("SLURM_JOB_ID", "local_run"))
           print(lastSaved)
           print(__file__)
           print(args)
 
+   # --- Check surprisal computation ---
+   test_chars = prepareDatasetChunks(test_sentences, train=False)
+   avg =compute_surprisal(memory, lm, test_chars, epoch)
+   print(f"Average surprisal at epoch {epoch}: {avg}")
+   assert False
 
 
-with open("/u/scr/mhahn/reinforce-logs-both-short/results/"+__file__+"_"+str(args.myID), "w") as outFile:
+with open("./tmp", "w") as outFile:
    print(args, file=outFile)
    print(runningAverageReward, file=outFile)
    print(expectedRetentionRate, file=outFile)
@@ -751,7 +922,8 @@ with open("/u/scr/mhahn/reinforce-logs-both-short/results/"+__file__+"_"+str(arg
 
 
 state = {"arguments" : args, "words" : itos, "memory" : [c.state_dict() for c in memory.modules_memory], "autoencoder" : [c.state_dict() for c in autoencoder.modules_autoencoder]}
-torch.save(state, f"/u/scr/mhahn/CODEBOOKS_MEMORY/{__file__}_{args.myID}.model")
+torch.save(state, "../data/{__file__}_{args.myID}.model")
+#torch.save(state, f"/.{__file__}_{args.myID}.model")
 
 
 
