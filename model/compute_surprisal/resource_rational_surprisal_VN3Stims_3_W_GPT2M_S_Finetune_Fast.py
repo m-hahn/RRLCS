@@ -425,14 +425,8 @@ relevantPath = glob.glob("../data/pred_1.0_del_*_simple/char-lm-ud-stationary_12
 checkpoint = torch.load(relevantPath, map_location="cpu",weights_only=False)
 print("Keys in checkpoint:", checkpoint.keys())
 
-args.learning_rate_memory = checkpoint["arguments"].learning_rate_memory
-args.learning_rate_autoencoder = checkpoint["arguments"].learning_rate_autoencoder
-args.lr_decay = checkpoint["arguments"].lr_decay
-args.reward_multiplier_baseline = checkpoint["arguments"].reward_multiplier_baseline
-args.dual_learning_rate = checkpoint["arguments"].dual_learning_rate
-args.momentum = checkpoint["arguments"].momentum
-args.deletion_rate = checkpoint["arguments"].deletion_rate
-args.predictability_weight = checkpoint["arguments"].predictability_weight
+args.learning_rate_memory = 0.0001 #checkpoint["arguments"].learning_rate_memory
+args.momentum = 0.5 #checkpoint["arguments"].momentum
 
 
 
@@ -735,10 +729,6 @@ def forward(numeric, train=True, printHere=False, provideAttention=False, onlyPr
       global expectedRetentionRate
 
       expectedRetentionRate = factor * expectedRetentionRate + (1-factor) * float(memory_hidden.mean())
-
-      expectedRetentionRateByEpoch[-1][0] += float(memory_hidden.mean())
-      expectedRetentionRateByEpoch[-1][1] += 1
-
       runningAverageBaselineDeviation = factor * runningAverageBaselineDeviation + (1-factor) * float((rewardMinusBaseline).abs().mean())
 
       if args.predictability_weight > 0:
@@ -1032,9 +1022,7 @@ startTimePredictions = time.time()
 startTimeTotal = time.time()
 
 averageLossOverEpoch = []
-expectedRetentionRateByEpoch = []
 for epoch in range(100):
-   expectedRetentionRateByEpoch.append([0,0])
    averageLossOverEpoch.append([0,0])
    print(epoch)
 
@@ -1051,7 +1039,7 @@ for epoch in range(100):
    #print("Number of batches to process", len(list(test_chars)))
    assert len(train_df) + len(test_df) == 384
 
-   if epoch % 5 == 0:
+   if True:
      # --- Check surprisal computation ---
      test_chars = prepareDatasetChunks(test_sentences, train=False)
      avg =compute_surprisal_imp(memory, lm, test_sentences, test_df, epoch)
@@ -1137,10 +1125,8 @@ for epoch in range(100):
           print(lastSaved)
           print(__file__)
           print(args)
-   with open("LOGS/loss/"+__file__+"_"+str(args.load_from_joint)+"_"+"Model"+".tsv", "w") as outFile:
-        print("\t".join([str(round(x[0]/(x[1]+1e-10), 3)) for x in averageLossOverEpoch]), file=outFile)
-        print([x[0]/(x[1]+1e-10) for x in expectedRetentionRateByEpoch], file=outFile)
-        print(args.deletion_rate, file=outFile)
+      with open("LOGS/loss/"+__file__+"_"+str(args.load_from_joint)+"_"+"Model"+".tsv", "w") as outFile:
+           print("\t".join([str(round(x[0]/(x[1]+1e-10), 3)) for x in averageLossOverEpoch]), file=outFile)
 
 
 with open("./tmp", "w") as outFile:

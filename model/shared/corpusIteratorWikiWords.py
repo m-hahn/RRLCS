@@ -33,6 +33,8 @@ def load(language, partition="train", removeMarkup=True):
          chunk = []
   yield chunk
 
+#assert False
+
 def load_100_stimuli(chunk_size=100):
     chunk = []
     #df = pd.read_csv(path, sep=",", skipinitialspace=True,index_col=False)
@@ -53,6 +55,8 @@ def load_100_stimuli(chunk_size=100):
     ##print(df_fixed.head())
     #df = df_fixed
     df_fixed = df
+    print(df)
+#    quit()
     # Convert SentenceID to numeric
     df_fixed["SentenceID"] = pd.to_numeric(df_fixed["SentenceID"], errors="coerce")
 
