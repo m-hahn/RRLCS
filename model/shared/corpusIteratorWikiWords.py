@@ -33,47 +33,56 @@ def load(language, partition="train", removeMarkup=True):
          chunk = []
   yield chunk
 
-def load_100_stimuli(path, chunk_size=100):
+def load_100_stimuli(chunk_size=100):
     chunk = []
     #df = pd.read_csv(path, sep=",", skipinitialspace=True,index_col=False)
-    df = pd.read_excel("/Users/teodorakamova/Documents/Uni Saarland/Work/RRLCS/resource-rational-surprisal/model/data/exp_100items.xlsx", sheet_name=0)
+    df = pd.read_csv("../data/exp_100items.csv")
+    print(df)
     df.to_csv("clean.csv", index=False, encoding="utf-8", quoting=csv.QUOTE_MINIMAL)
+    assert len(df) == 384
 
     #print(df.columns)
     #print(df.head())
     col = df.columns[0]
     #print(col)
     #print(df[col].astype(str))
-    df_fixed = pd.read_csv(StringIO("\n".join(df[col].astype(str))), quotechar='"', engine="python")
-    df_fixed = df_fixed.drop('1', axis=1)
-    df_fixed.rename(columns={"1.1": "SentenceID", "exp.b.1": "Label", "was":"critical_word","The insinuation that the teacher failed the student was only a malicious smear.":"Sentence"}, inplace=True)
-    #print(df_fixed.columns)
-    #print(df_fixed.head())
-    df = df_fixed
-
+    #df_fixed = pd.read_csv(StringIO("\n".join(df[col].astype(str))), quotechar='"', engine="python")
+    #df_fixed = df_fixed.drop('1', axis=1)
+    #df_fixed.rename(columns={"1.1": "SentenceID", "exp.b.1": "Label", "was":"critical_word","The insinuation that the teacher failed the student was only a malicious smear.":"Sentence"}, inplace=True)
+    ##print(df_fixed.columns)
+    ##print(df_fixed.head())
+    #df = df_fixed
+    df_fixed = df
     # Convert SentenceID to numeric
     df_fixed["SentenceID"] = pd.to_numeric(df_fixed["SentenceID"], errors="coerce")
 
     #Split into train/test sets 
     test_df = df_fixed[df_fixed["SentenceID"] <= 176].copy()
-    train_df = df_fixed[df_fixed["SentenceID"] >= 177].copy()
+    train_df = df_fixed[df_fixed["SentenceID"] >= 177].copy().sample(frac=1)
+    print(train_df)
+#    quit()
 
     print(f"Train set: {len(train_df)} sentences")
     print(f"Test set: {len(test_df)} sentences")
 
+    
+
+
     def stream_chunks(df_subset):
         chunk = []
-        for _, row in df_subset.iterrows():
-            sentence = str(row["Sentence"]).strip().lower()
-            words = sentence.split()
-            chunk.extend(words)
-            if len(chunk) >= chunk_size:
-                yield chunk
-                chunk = []
+        for _ in range(1):  # Repeat 5 times to increase data size
+           for _, row in df_subset.sample(frac=1).iterrows():
+               sentence = str(row["Sentence"]).strip().lower().replace(".", " .")
+               words = sentence.split()
+               chunk.extend(words)
+               if len(chunk) >= chunk_size:
+#                   print(chunk)
+                   yield chunk[:chunk_size]
+                   chunk = chunk[chunk_size:]
         if chunk:
             yield chunk
 
-    return stream_chunks(train_df), stream_chunks(test_df), train_df, test_df
+    return stream_chunks(train_df), [str(row["Sentence"]).strip().lower().replace(".", " .") for _, row in test_df.iterrows()], train_df, test_df
     # Preprocess into lists of words 
     # def sentence_to_words(sentence):
     #     if isinstance(sentence, str):
@@ -106,7 +115,7 @@ def training(language):
   return load(language, "train")
 
 def finetune(language):
-  return load_100_stimuli("/Users/teodorakamova/Documents/Uni Saarland/Work/RRLCS/resource-rational-surprisal/model/data/exp_100items(in)-2.csv")
+  return load_100_stimuli()
 
 def dev(language, removeMarkup=True):
   return load(language, "valid", removeMarkup=removeMarkup)
