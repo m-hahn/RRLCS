@@ -801,10 +801,10 @@ updatesCount = 0
 
 maxUpdates = 200000 if args.tuning == 1 else 10000000000
 
-def showAttention(word, POS=""):
+def showAttention(word, POS="", outFile=sys.stdout):
     attention = forward(torch.LongTensor([stoi[word]+3 for _ in range(args.sequence_length+1)]).view(-1, 1).to(DEVICE), train=True, printHere=True, provideAttention=True)
     attention = attention[:,0,0]
-    print(*(["SCORES", word, "\t"]+[round(x,2) for x in list(attention.cpu().data.numpy())] + (["POS="+POS] if POS != "" else [])))
+    print(*(["SCORES", word, "\t"]+[round(x,2) for x in list(attention.cpu().data.numpy())] + (["POS="+POS] if POS != "" else [])), file=outFile)
 
 
 
@@ -1025,7 +1025,7 @@ startTimePredictions = time.time()
 startTimeTotal = time.time()
 
 averageLossOverEpoch = []
-for epoch in range(20):
+for epoch in range(40):
    averageLossOverEpoch.append([0,0])
    print(epoch)
 
@@ -1042,11 +1042,27 @@ for epoch in range(20):
    #print("Number of batches to process", len(list(test_chars)))
    assert len(train_df) + len(test_df) == 384
 
-   if False:
+   if True:
      # --- Check surprisal computation ---
      test_chars = prepareDatasetChunks(test_sentences, train=False)
      avg =compute_surprisal_imp(memory, lm, test_sentences, test_df, epoch)
      print(f"Average surprisal at epoch {epoch}: {avg}")
+
+   if True:
+       print("=========================")
+       with open("LOGS/memory-scores/"+__file__+"_"+str(710757217)+"_"+"Model"+"_"+str(epoch)+".tsv", "w") as outFile:
+          showAttention("the")
+          showAttention("was")
+          showAttention("that")
+          showAttention("fact")
+          showAttention("information")
+          showAttention("report")
+          showAttention("belief")
+          showAttention("finding")
+          showAttention("prediction")
+          showAttention("of")
+          showAttention("by")
+          showAttention("about")
 
 
 
@@ -1112,7 +1128,8 @@ for epoch in range(20):
           print(lastSaved)
           print(__file__)
           print(args)
-
+      with open("LOGS/loss/"+__file__+"_"+str(710757217)+"_"+"Model"+".tsv", "w") as outFile:
+           print("\t".join([str(round(x[0]/(x[1]+1e-10), 3)) for x in averageLossOverEpoch]), file=outFile)
 
 
 with open("./tmp", "w") as outFile:
