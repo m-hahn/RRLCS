@@ -9,6 +9,10 @@ import argparse
 
 import torch
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+assert DEVICE == "cuda"
+
+
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--language", dest="language", type=str, default="english")
@@ -42,12 +46,12 @@ parser.add_argument("--weight_dropout_out", type=float, default=random.choice([0
 parser.add_argument("--char_dropout_prob", type=float, default=random.choice([0.01]))
 
 ## Learning Rates
-parser.add_argument("--learning_rate_memory", type = float, default= random.choice([0.00002, 0.00005, 0.0001, 0.0001, 0.0001]))  # Can also use 0.0001, which leads to total convergence to deterministic solution withtin maximum iterations (March 25, 2021)   #, 0.0001, 0.0002 # 1e-7, 0.000001, 0.000002, 0.000005, 0.000007, 
-parser.add_argument("--learning_rate_autoencoder", type = float, default= random.choice([0.001, 0.01, 0.1, 0.1, 0.1, 0.1])) # 0.0001, 
-parser.add_argument("--lr_decay", type=float, default=random.choice([1.0]))
+parser.add_argument("--learning_rate_memory", type = float, default=float('nan')) #= random.choice([0.00002, 0.00005, 0.0001, 0.0001, 0.0001]))  # Can also use 0.0001, which leads to total convergence to deterministic solution withtin maximum iterations (March 25, 2021)   #, 0.0001, 0.0002 # 1e-7, 0.000001, 0.000002, 0.000005, 0.000007, 
+parser.add_argument("--learning_rate_autoencoder", type = float, default=float('nan')) #= random.choice([0.001, 0.01, 0.1, 0.1, 0.1, 0.1])) # 0.0001, 
+parser.add_argument("--lr_decay", type=float, default=float('nan')) #=random.choice([1.0]))
 parser.add_argument("--reward_multiplier_baseline", type=float, default=0.1)
-parser.add_argument("--dual_learning_rate", type=float, default=random.choice([0.01, 0.02, 0.05, 0.1, 0.2, 0.3]))
-parser.add_argument("--momentum", type=float, default=random.choice([0.5, 0.7, 0.7, 0.7, 0.7, 0.9])) # Momentum is helpful in facilitating convergence to a low-loss solution (March 25, 2021). It might be even more important for getting fast convergence than a high learning rate
+parser.add_argument("--dual_learning_rate", type=float, default=float('nan')) #random.choice([0.01, 0.02, 0.05, 0.1, 0.2, 0.3]))
+parser.add_argument("--momentum", type=float, default=float('nan')) #random.choice([0.5, 0.7, 0.7, 0.7, 0.7, 0.9])) # Momentum is helpful in facilitating convergence to a low-loss solution (March 25, 2021). It might be even more important for getting fast convergence than a high learning rate
 parser.add_argument("--entropy_weight", type=float, default=random.choice([0.0])) # 0.0,  0.005, 0.01, 0.1, 0.4]))
 
 
@@ -57,8 +61,8 @@ parser.add_argument("--verbose", type=bool, default=False)
 parser.add_argument("--tuning", type=int, default=1) #random.choice([0.00001, 0.00005, 0.0001, 0.0002, 0.0003, 0.0005, 0.0007, 0.0008, 0.001])) # 0.0,  0.005, 0.01, 0.1, 0.4]))
 
 # Lambda and Delta Parameters
-parser.add_argument("--deletion_rate", type=float, default=0.5)
-parser.add_argument("--predictability_weight", type=float, default=random.choice([0.0, 0.25, 0.5, 0.75, 1.0]))
+parser.add_argument("--deletion_rate", type=float, default=float('nan'))
+parser.add_argument("--predictability_weight", type=float, default=float('nan'))
 
 
 TRAIN_LM = False
@@ -74,10 +78,10 @@ args=parser.parse_args()
 
 ############################
 
-assert args.predictability_weight >= 0
-assert args.predictability_weight <= 1
-assert args.deletion_rate > 0.0
-assert args.deletion_rate < 1.0
+#assert args.predictability_weight >= 0
+#assert args.predictability_weight <= 1
+#assert args.deletion_rate > 0.0
+#assert args.deletion_rate < 1.0
 
 
 
@@ -137,19 +141,19 @@ class Autoencoder:
   """ Amortized Reconstruction Posterior """
   def __init__(self):
     # This model describes a standard sequence-to-sequence LSTM model with attention
-    self.rnn_encoder = torch.nn.LSTM(2*args.word_embedding_size, int(args.hidden_dim_autoencoder/2.0), args.layer_num, bidirectional=True)
-    self.rnn_decoder = torch.nn.LSTM(2*args.word_embedding_size, args.hidden_dim_autoencoder, args.layer_num)
-    self.output = torch.nn.Linear(args.hidden_dim_autoencoder, len(itos)+3)
-    self.word_embeddings = torch.nn.Embedding(num_embeddings=len(itos)+3, embedding_dim=2*args.word_embedding_size)
+    self.rnn_encoder = torch.nn.LSTM(2*args.word_embedding_size, int(args.hidden_dim_autoencoder/2.0), args.layer_num, bidirectional=True).to(DEVICE)
+    self.rnn_decoder = torch.nn.LSTM(2*args.word_embedding_size, args.hidden_dim_autoencoder, args.layer_num).to(DEVICE)
+    self.output = torch.nn.Linear(args.hidden_dim_autoencoder, len(itos)+3).to(DEVICE)
+    self.word_embeddings = torch.nn.Embedding(num_embeddings=len(itos)+3, embedding_dim=2*args.word_embedding_size).to(DEVICE)
     self.logsoftmax = torch.nn.LogSoftmax(dim=2)
     self.softmax = torch.nn.Softmax(dim=2)
     self.attention_softmax = torch.nn.Softmax(dim=1)
     self.train_loss = torch.nn.NLLLoss(ignore_index=0)
     self.print_loss = torch.nn.NLLLoss(size_average=False, reduce=False, ignore_index=0)
     self.char_dropout = torch.nn.Dropout2d(p=args.char_dropout_prob)
-    self.attention_proj = torch.nn.Linear(args.hidden_dim_autoencoder, args.hidden_dim_autoencoder, bias=False)
+    self.attention_proj = torch.nn.Linear(args.hidden_dim_autoencoder, args.hidden_dim_autoencoder, bias=False).to(DEVICE)
     self.attention_proj.weight.data.fill_(0)
-    self.output_mlp = torch.nn.Linear(2*args.hidden_dim_autoencoder, args.hidden_dim_autoencoder)
+    self.output_mlp = torch.nn.Linear(2*args.hidden_dim_autoencoder, args.hidden_dim_autoencoder).to(DEVICE)
     self.relu = torch.nn.ReLU()
     self.modules_autoencoder = [self.rnn_decoder, self.rnn_encoder, self.output, self.word_embeddings, self.attention_proj, self.output_mlp]
 
@@ -269,10 +273,10 @@ class Autoencoder:
 class LanguageModel:
    """ Amortized Prediction Posterior """
    def __init__(self):
-      self.rnn = torch.nn.LSTM(2*args.word_embedding_size, args.hidden_dim_lm, args.layer_num)
+      self.rnn = torch.nn.LSTM(2*args.word_embedding_size, args.hidden_dim_lm, args.layer_num).to(DEVICE)
       self.rnn_drop = self.rnn
-      self.output = torch.nn.Linear(args.hidden_dim_lm, len(itos)+3)
-      self.word_embeddings = torch.nn.Embedding(num_embeddings=len(itos)+3, embedding_dim=2*args.word_embedding_size)
+      self.output = torch.nn.Linear(args.hidden_dim_lm, len(itos)+3).to(DEVICE)
+      self.word_embeddings = torch.nn.Embedding(num_embeddings=len(itos)+3, embedding_dim=2*args.word_embedding_size).to(DEVICE)
       self.logsoftmax = torch.nn.LogSoftmax(dim=2)
       self.train_loss = torch.nn.NLLLoss(ignore_index=0)
       self.print_loss = torch.nn.NLLLoss(size_average=False, reduce=False, ignore_index=0)
@@ -282,48 +286,38 @@ class LanguageModel:
    def forward(self, input_tensor_noised, target_tensor_full, NUMBER_OF_REPLICATES):
        lm_embedded = self.word_embeddings(input_tensor_noised)
        lm_out, lm_hidden = self.rnn_drop(lm_embedded, None)
-       #lm_out = lm_out[-1:]
+       lm_out = lm_out[-1:]
        lm_logits = self.output(lm_out) 
        lm_log_probs = self.logsoftmax(lm_logits)
-       target_log_probs = lm_log_probs.gather(2, target_tensor_full.unsqueeze(2)).squeeze(2)
-            # Surprisal is negative log-probability
-       surprisals = -target_log_probs 
-       #print("Target log prob shape:", target_log_probs.shape)
-       #print("Surprisals shape:", surprisals.shape)
+ 
        # Prediction Loss 
-       #lm_lossTensor = self.print_loss(lm_log_probs.view(-1, len(itos)+3), target_tensor_full[-1].view(-1)).view(-1, NUMBER_OF_REPLICATES) # , args.batchSize is 1
-       lm_lossTensor = self.print_loss(
-        lm_log_probs.view(-1, len(itos)+3),
-        target_tensor_full.reshape(-1)
-        ).view(-1, NUMBER_OF_REPLICATES)
-       #print("First 5 target token indices:", target_tensor_full[:5, 0])
-       #print("Surprisal for first 5 tokens:", (-target_log_probs[:5, 0]).tolist())
-       return lm_lossTensor, surprisals
+       lm_lossTensor = self.print_loss(lm_log_probs.view(-1, len(itos)+3), target_tensor_full[-1].view(-1)).view(-1, NUMBER_OF_REPLICATES) # , args.batchSize is 1
+       return lm_lossTensor 
 
 
 
 class MemoryModel():
   """ Noise Model """
   def __init__(self):
-     self.memory_mlp_inner = torch.nn.Linear(2*args.word_embedding_size, 500)
-     self.memory_mlp_inner_bilinear = torch.nn.Linear(2*args.word_embedding_size, 500)
-     self.memory_mlp_inner_from_pos = torch.nn.Linear(256, 500)
-     self.memory_mlp_outer = torch.nn.Linear(500, 1)
+     self.memory_mlp_inner = torch.nn.Linear(2*args.word_embedding_size, 500).to(DEVICE)
+     self.memory_mlp_inner_bilinear = torch.nn.Linear(2*args.word_embedding_size, 500).to(DEVICE)
+     self.memory_mlp_inner_from_pos = torch.nn.Linear(256, 500).to(DEVICE)
+     self.memory_mlp_outer = torch.nn.Linear(500, 1).to(DEVICE)
      self.sigmoid = torch.nn.Sigmoid()
      self.relu = torch.nn.ReLU()
-     self.positional_embeddings = torch.nn.Embedding(num_embeddings=args.sequence_length+2, embedding_dim=256)
-     self.memory_word_pos_inter = torch.nn.Linear(256, 1, bias=False)
+     self.positional_embeddings = torch.nn.Embedding(num_embeddings=args.sequence_length+2, embedding_dim=256).to(DEVICE)
+     self.memory_word_pos_inter = torch.nn.Linear(256, 1, bias=False).to(DEVICE)
      self.memory_word_pos_inter.weight.data.fill_(0)
-     self.perword_baseline_inner = torch.nn.Linear(2*args.word_embedding_size, 500)
-     self.perword_baseline_outer = torch.nn.Linear(500, 1)
-     self.memory_bilinear = torch.nn.Linear(256, 500, bias=False)
+     self.perword_baseline_inner = torch.nn.Linear(2*args.word_embedding_size, 500).to(DEVICE)
+     self.perword_baseline_outer = torch.nn.Linear(500, 1).to(DEVICE)
+     self.memory_bilinear = torch.nn.Linear(256, 500, bias=False).to(DEVICE)
      self.memory_bilinear.weight.data.fill_(0)
      self.modules_memory = [self.memory_mlp_inner, self.memory_mlp_outer, self.memory_mlp_inner_from_pos, self.positional_embeddings, self.perword_baseline_inner, self.perword_baseline_outer, self.memory_word_pos_inter, self.memory_bilinear, self.memory_mlp_inner_bilinear]
   def forward(self, numeric):
       embedded_everything_mem = lm.word_embeddings(numeric).detach()
 
       # Positional embeddings
-      numeric_positions = torch.LongTensor(range(args.sequence_length+1)).unsqueeze(1)
+      numeric_positions = torch.LongTensor(range(args.sequence_length+1)).unsqueeze(1).to(DEVICE)
       embedded_positions = self.positional_embeddings(numeric_positions)
       numeric_embedded = self.memory_word_pos_inter(embedded_positions)
 
@@ -421,13 +415,24 @@ class MemoryModel():
 autoencoder = Autoencoder()
 lm = LanguageModel()
 memory = MemoryModel()
-
+#assert lm.device == "cuda", lm.device
 
 
 # load checkpoint
 #checkpoint = torch.load("/Users/teodorakamova/Documents/Uni Saarland/Work/RRLCS/resource-rational-surprisal/model/data/char-lm-ud-stationary_12_SuperLong_WithAutoencoder_WithEx_Samples_Short_Combination_Subseq_VeryLong_WithSurp12_NormJudg_Short_Cond_Shift_NoComma_Bugfix_VN3Stims_3_W_GPT2M_S.py_665599355.model", map_location="cpu",weights_only=False)
 checkpoint = torch.load("../data/pred_1.0_del_0.5_simple/char-lm-ud-stationary_12_SuperLong_WithAutoencoder_WithEx_Samples_Short_Combination_Subseq_VeryLong_WithSurp12_NormJudg_Short_Cond_Shift_NoComma_Bugfix_VN3Stims_3_W_GPT2M_S.py_710757217.model", map_location="cpu",weights_only=False)
 print("Keys in checkpoint:", checkpoint.keys())
+
+args.learning_rate_memory = checkpoint["arguments"].learning_rate_memory
+args.learning_rate_autoencoder = checkpoint["arguments"].learning_rate_autoencoder
+args.lr_decay = checkpoint["arguments"].lr_decay
+args.reward_multiplier_baseline = checkpoint["arguments"].reward_multiplier_baseline
+args.dual_learning_rate = checkpoint["arguments"].dual_learning_rate
+args.momentum = checkpoint["arguments"].momentum
+args.deletion_rate = checkpoint["arguments"].deletion_rate
+args.predictability_weight = checkpoint["arguments"].predictability_weight
+
+
 
 # Load the memory model (the forgetting rates model)
 for i, module in enumerate(memory.modules_memory):
@@ -445,7 +450,7 @@ parameters_memory_cached = [x for x in parameters_memory()]
 
 
 # Dual parameter (for Lagrangian dual)
-dual_weight = torch.FloatTensor([1.0])
+dual_weight = torch.FloatTensor([1.0]).to(DEVICE)
 dual_weight.requires_grad=True
 
 # Parameters for inference networks
@@ -487,90 +492,45 @@ if FINETUNE_MEMORY:
     
 # Load pretrained prior and amortized posteriors
 
+print("ARGUMENTS OF ORIGINAL MODEL ", checkpoint["arguments"])
 # Amortized Reconstruction Posterior
-if args.load_from_autoencoder is not None:
+if True or args.load_from_autoencoder is not None:
   print(args.load_from_autoencoder)
-  checkpoint = torch.load("../data/"+args.language+"_"+"autoencoder2_mlp_bidir_Erasure_SelectiveLoss.py"+"_code_"+str(args.load_from_autoencoder)+".txt", map_location=torch.device('cpu'))
-  for i in range(len(checkpoint["components"])):
-      autoencoder.modules_autoencoder[i].load_state_dict(checkpoint["components"][i])
-  del checkpoint
+  print(checkpoint["arguments"].load_from_autoencoder)
+  args.load_from_autoencoder = checkpoint["arguments"].load_from_autoencoder
+  checkpoint_ = torch.load("../data/"+args.language+"_"+"autoencoder2_mlp_bidir_Erasure_SelectiveLoss.py"+"_code_"+str(args.load_from_autoencoder)+".txt", map_location=torch.device('cpu'))
+  for i in range(len(checkpoint_["components"])):
+      autoencoder.modules_autoencoder[i].load_state_dict(checkpoint_["components"][i])
+  del checkpoint_
  
 # Amortized Prediction Posterior
-if args.load_from_lm is not None:
+if True or args.load_from_lm is not None:
   lm_file = "char-lm-ud-stationary-vocab-wiki-nospaces-bptt-2-words_NoNewWeightDrop_NoChars_Erasure.py"
-  checkpoint = torch.load("../data/"+args.language+"_"+lm_file+"_code_"+str(args.load_from_lm)+".txt", map_location=torch.device('cpu'))
-  for i in range(len(checkpoint["components"])):
-      lm.modules_lm[i].load_state_dict(checkpoint["components"][i])
-  del checkpoint
+  args.load_from_lm = checkpoint["arguments"].load_from_lm
+  checkpoint_ = torch.load("../data/"+args.language+"_"+lm_file+"_code_"+str(args.load_from_lm)+".txt", map_location=torch.device('cpu'))
+  for i in range(len(checkpoint_["components"])):
+      lm.modules_lm[i].load_state_dict(checkpoint_["components"][i])
+  del checkpoint_
 
 from torch.autograd import Variable
 
+# This is put back from resource_rational_surprisal_VN3Stims_3_W_GPT2M_Lo.py
+if "lm_embeddings" in checkpoint:
+  print(lm.word_embeddings.weight)
+  assert (checkpoint["lm_embeddings"]["weight"] == lm.word_embeddings.weight).all()
+  del checkpoint["lm_embeddings"]
+assert set(list(checkpoint)) == set(["arguments", "words", "memory", "autoencoder"]), list(checkpoint)
+assert itos == checkpoint["words"]
+for i in range(len(checkpoint["memory"])):
+   assert (memory.modules_memory[i].weight.to(DEVICE) == checkpoint["memory"][i]["weight"].to(DEVICE)).all()
+   memory.modules_memory[i].load_state_dict(checkpoint["memory"][i])
+#for i in range(len(checkpoint["lm"])):
+#   lm.modules_lm[i].load_state_dict(checkpoint["lm"][i])
+for i in range(len(checkpoint["autoencoder"])):
+   autoencoder.modules_autoencoder[i].load_state_dict(checkpoint["autoencoder"][i])
+#state = {"arguments" : args, "words" : itos, "memory" : memory, "lm" : lm, "autoencoder" : autoencoder}
+#torch.save(state, "/u/scr/mhahn/CODEBOOKS_MEMORY/{__file__}_{args.myID}.model")
 
-
-def compute_surprisal(memory, lm, test_data, epoch, output_dir="surprisal_outputs"):
-    # Compute surprisal on each epoch
-    os.makedirs(output_dir, exist_ok=True)
-    results = []
-    total_surprisal = 0.0
-    count = 0
-
-    with torch.no_grad():
-        for sid, batch in enumerate(test_data):
-            if isinstance(batch, tuple):
-                numeric, _ = batch
-            else:
-                numeric = batch
-
-            # Expand numeric to replicates dimension
-            if numeric.dim() == 1:
-               numeric = numeric.view(-1, 1)
-            numeric = numeric.repeat(1, args.NUMBER_OF_REPLICATES)
-
-            #Get memory hidden activations
-            memory_hidden, _ = memory.forward(numeric)
-
-            #Sample deletion mask
-            memory_filter = torch.bernoulli(memory_hidden).squeeze(2)
-
-            #Keep punctuation 
-            punctuation = (((numeric.unsqueeze(0) == PUNCTUATION.view(len(punctuation_list), 1, 1)).long().sum(dim=0)).bool())
-
-            #Construct noised input
-            numeric_noised = torch.where(torch.logical_or(punctuation, memory_filter == 1), numeric, 0 * numeric)
-
-
-            #print("Input shape:", numeric_noised[:-1].shape)
-            #print("Target shape:", numeric[1:].shape)
-            
-            # Run LM forward pass to get surprisal 
-            lm_lossTensor, surprisals = lm.forward(
-                numeric_noised[:-1],  # input
-                numeric[1:],          # target
-                NUMBER_OF_REPLICATES=args.NUMBER_OF_REPLICATES
-            )
-
-            surprisals = surprisals.detach().cpu().numpy()
-
-            seq_len, batch_size = surprisals.shape
-
-            for b in range(batch_size):        
-               for t in range(seq_len):       
-                  results.append({
-                        "epoch": epoch,
-                        "sentence_id": sid,
-                        "replicate_id": b,      
-                        "token_index": t + 1,  
-                        "surprisal": float(surprisals[t, b])
-                  })
-                  total_surprisal += float(surprisals[t, b])
-                  count += 1
-    # Save into CSV
-    df = pd.DataFrame(results)
-    out_path = os.path.join(output_dir, f"surprisal_epoch_{epoch}.csv")
-    df.to_csv(out_path, index=False)
-    print(f"Saved surprisal results for epoch {epoch} to {out_path}")
-    #assert False
-    return total_surprisal / count if count > 0 else 0.0
 
 
 
@@ -597,7 +557,7 @@ def prepareDatasetChunks(data, train=True):
 
          numerified = numerified[cutoff:]
        
-         numerifiedCurrent = torch.LongTensor(numerifiedCurrent).view(args.batchSize, -1, sequenceLengthHere).transpose(0,1).transpose(1,2)
+         numerifiedCurrent = torch.LongTensor(numerifiedCurrent).view(args.batchSize, -1, sequenceLengthHere).transpose(0,1).transpose(1,2).to(DEVICE)
 
          numberOfSequences = numerifiedCurrent.size()[0]
          for i in range(numberOfSequences):
@@ -646,7 +606,7 @@ def product(x):
 # This also includes OOV, in order to exclude posterior samples with undefined
 #  syntactic structure.
 punctuation_list = [".", "OOV", '"', "(", ")", "'", '"', ":", ",", "'s", "[", "]"]
-PUNCTUATION = torch.LongTensor([stoi_total[x] for x in punctuation_list])
+PUNCTUATION = torch.LongTensor([stoi_total[x] for x in punctuation_list]).to(DEVICE)
 
 def forward(numeric, train=True, printHere=False, provideAttention=False, onlyProvideMemoryResult=False, NUMBER_OF_REPLICATES=args.NUMBER_OF_REPLICATES, expandReplicates=True):
       """ Forward pass through the entire model
@@ -711,7 +671,7 @@ def forward(numeric, train=True, printHere=False, provideAttention=False, onlyPr
       ##########################################
       # Step 6: Run prediction inference network
       if args.predictability_weight > 0:
-       lm_lossTensor, _ = lm.forward(input_tensor_noised, target_tensor_full, NUMBER_OF_REPLICATES)
+       lm_lossTensor = lm.forward(input_tensor_noised, target_tensor_full, NUMBER_OF_REPLICATES)
       ##########################################
       ##########################################
 
@@ -802,56 +762,32 @@ def forward(numeric, train=True, printHere=False, provideAttention=False, onlyPr
 
 
 def backward(loss, printHere):
-    """ An optimization step for the resource-rational objective function """
-    # Reset grads for optimizers we will actually call
-    optim_memory.zero_grad()
-    optim_autoencoder.zero_grad()
+      """ An optimization step for the resource-rational objective function """
+      # Set stored gradients to zero
+      optim_autoencoder.zero_grad()
+      optim_memory.zero_grad()
 
-    if dual_weight.grad is not None:
-       dual_weight.grad.data.fill_(0.0)
-    if printHere:
-       print(loss)
-    # Compute gradients
-    loss.backward()
+      if dual_weight.grad is not None:
+         dual_weight.grad.data.fill_(0.0)
+      if printHere:
+         print(loss)
+      # Calculate new gradients
+      loss.backward()
+      # Gradient clipping
+      torch.nn.utils.clip_grad_value_(parameters_memory_cached, 5.0) #, norm_type="inf")
+      if TRAIN_LM:
+         assert False
+         torch.nn.utils.clip_grad_value_(parameters_lm_cached, 5.0) #, norm_type="inf")
 
-    # Gradient clipping (only meaningful for memory params here)
-    torch.nn.utils.clip_grad_value_(parameters_memory_cached, 5.0)
+      # Adapt parameters
+      optim_autoencoder.step()
+      optim_memory.step()
 
-    # Update parameters
-    optim_autoencoder.step()
-    optim_memory.step()
-
-    # Update dual weight
-    if dual_weight.grad is not None:
-        dual_weight.data.add_(args.dual_learning_rate * dual_weight.grad.data)
-        dual_weight.data.clamp_(min=0)
-# def backward(loss, printHere):
-#       """ An optimization step for the resource-rational objective function """
-#       # Set stored gradients to zero
-#       optim_autoencoder.zero_grad()
-#       optim_memory.zero_grad()
-
-#       if dual_weight.grad is not None:
-#          dual_weight.grad.data.fill_(0.0)
-#       if printHere:
-#          print(loss)
-#       # Calculate new gradients
-#       loss.backward()
-#       # Gradient clipping
-#       torch.nn.utils.clip_grad_value_(parameters_memory_cached, 5.0) #, norm_type="inf")
-#       if TRAIN_LM:
-#          assert False
-#          torch.nn.utils.clip_grad_value_(parameters_lm_cached, 5.0) #, norm_type="inf")
-
-#       # Adapt parameters
-#       optim_autoencoder.step()
-#       optim_memory.step()
-
-# #      print(dual_weight.grad)
-#       dual_weight.data.add_(args.dual_learning_rate*dual_weight.grad.data)
-#  #     print("W", dual_weight)
-#       dual_weight.data.clamp_(min=0)
-#   #    print("W", dual_weight)
+#      print(dual_weight.grad)
+      dual_weight.data.add_(args.dual_learning_rate*dual_weight.grad.data)
+ #     print("W", dual_weight)
+      dual_weight.data.clamp_(min=0)
+  #    print("W", dual_weight)
 
 lossHasBeenBad = 0
 
@@ -866,7 +802,7 @@ updatesCount = 0
 maxUpdates = 200000 if args.tuning == 1 else 10000000000
 
 def showAttention(word, POS=""):
-    attention = forward(torch.LongTensor([stoi[word]+3 for _ in range(args.sequence_length+1)]).view(-1, 1), train=True, printHere=True, provideAttention=True)
+    attention = forward(torch.LongTensor([stoi[word]+3 for _ in range(args.sequence_length+1)]).view(-1, 1).to(DEVICE), train=True, printHere=True, provideAttention=True)
     attention = attention[:,0,0]
     print(*(["SCORES", word, "\t"]+[round(x,2) for x in list(attention.cpu().data.numpy())] + (["POS="+POS] if POS != "" else [])))
 
@@ -906,9 +842,13 @@ def encodeContextCrop(inp, context):
 
 
 
-def compute_surprisal_imp(memory, lm, test_data, epoch, output_dir="surprisal_outputs", SANITY="Model"):
+def compute_surprisal_imp(memory, lm, test_data, test_df, epoch, output_dir="surprisal_outputs", SANITY="Model"):
 #
 #def getTotalSentenceSurprisals(SANITY="Model", VERBS=2): # Surprisal for EOS after 2 or 3 verbs
+    print(test_data)
+    print(test_df)
+    print(list(zip(test_data, list(test_df["Sentence"]))))
+    #quit()
     assert SANITY in ["Model", "ZeroLoss"]
 #    print(plain_lm) 
     surprisalsByRegions = {}
@@ -917,13 +857,18 @@ def compute_surprisal_imp(memory, lm, test_data, epoch, output_dir="surprisal_ou
     import scoreWithGPT2Medium as scoreWithGPT2
     global topNouns
 #    topNouns = ["fact", "report"]
-    with open("LOGS/full-logs-tsv-perItem/"+__file__+"_"+str(710757217)+"_"+SANITY, "w") if SANITY != "ModelTmp" else sys.stdout as outFile:
+    with open("LOGS/full-logs-tsv-perItem/"+__file__+"_"+str(710757217)+"_"+SANITY+"_"+str(epoch)+".tsv", "w") if SANITY != "ModelTmp" else sys.stdout as outFile:
      print("\t".join(["Noun", "Item", "Region", "Condition", "Surprisal", "SurprisalReweighted", "ThatFraction", "ThatFractionReweighted", "SurprisalsWithThat", "SurprisalsWithoutThat", "Word"]), file=outFile)
      with torch.no_grad():
       TRIALS_COUNT = 0
       test_data = list(test_data)
       TOTAL_TRIALS = len(test_data) * 2 * 1
       for sentenceID in range(len(test_data)):
+          sentence = test_data[sentenceID]
+ #         print(test_df)
+#          quit()
+          positionOfCriticalWord = sentence.split(" ").index(list(test_df["critical_word"])[sentenceID])
+          print(positionOfCriticalWord)
           surprisalsByRegions[sentenceID] = []
           surprisalsReweightedByRegions[sentenceID] = []
           print(sentenceID)
@@ -935,10 +880,10 @@ def compute_surprisal_imp(memory, lm, test_data, epoch, output_dir="surprisal_ou
             remainingInput = test_data[sentenceID].split(" ")
             print("INPUT", context, remainingInput)
             assert len(remainingInput) > 0
-            for i in range(1, len(remainingInput)):
+            for i in [positionOfCriticalWord]:
 
-              numerified = encodeContextCrop(" ".join(remainingInput[:i+1]), "later the nurse suggested they treat the patient with an antibiotic but in the end this did not happen . " + context)
-              pointWhereToStart = args.sequence_length - len(context.split(" ")) - i - 1
+              numerified = encodeContextCrop(" ".join(remainingInput[:i+1]), "later the nurse suggested they treat the patient with an antibiotic but in the end this did not happen . " + context).to(DEVICE)
+              pointWhereToStart = max(0, args.sequence_length - len(context.split(" ")) - i - 1) # some sentences are too long
               assert pointWhereToStart >= 0, (args.sequence_length, i, len(context.split(" ")))
               assert numerified.size()[0] == args.sequence_length+1, (numerified.size())
               # Run the memory model. We collect 'numberOfSamples' many replicates.
@@ -1051,7 +996,7 @@ def compute_surprisal_imp(memory, lm, test_data, epoch, output_dir="surprisal_ou
               surprisalsReweightedByRegions[sentenceID].append(float( reweightedSurprisalsMean))
               surprisalsByRegions[sentenceID].append(float( surprisalOfNextWord))
 
-              print("\t".join([str(w) for w in [NOUN, round(float( surprisalOfNextWord),3), round(float( reweightedSurprisalsMean),3),  remainingInput[i]]]), file=outFile)
+              print("\t".join([str(w) for w in [(list(test_df["Label"])[sentenceID]), (list(test_df["critical_word"])[sentenceID]), round(float( surprisalOfNextWord),3), round(float( reweightedSurprisalsMean),3),  (list(test_df["Sentence"])[sentenceID])]]), file=outFile)
 
 
            #   if compatible == "compatible":
@@ -1071,7 +1016,6 @@ def compute_surprisal_imp(memory, lm, test_data, epoch, output_dir="surprisal_ou
     print("SURPRISALS BY NOUN", surprisalsByRegions)
     print("SURPRISALS_PER_NOUN PLAIN_LM, WITH VERB, NEW")
 
-
 startTimePredictions = time.time()
 
 
@@ -1080,7 +1024,9 @@ startTimeTotal = time.time()
 startTimePredictions = time.time()
 startTimeTotal = time.time()
 
+averageLossOverEpoch = []
 for epoch in range(20):
+   averageLossOverEpoch.append([0,0])
    print(epoch)
 
    # Get training data
@@ -1091,10 +1037,19 @@ for epoch in range(20):
      print(x)
 #   quit()
    training_chars = prepareDatasetChunks(train_sentences, train=True)
-   print(len(list(training_chars)))
+   #print(len(list(training_chars)))
 #   quit()
    #print("Number of batches to process", len(list(test_chars)))
    assert len(train_df) + len(test_df) == 384
+
+   if False:
+     # --- Check surprisal computation ---
+     test_chars = prepareDatasetChunks(test_sentences, train=False)
+     avg =compute_surprisal_imp(memory, lm, test_sentences, test_df, epoch)
+     print(f"Average surprisal at epoch {epoch}: {avg}")
+
+
+
    # Set the model up for training
    if FINETUNE_MEMORY:
       lm.rnn_drop.train(False)   # freeze LM (dropout off)
@@ -1114,122 +1069,32 @@ for epoch in range(20):
    if updatesCount > maxUpdates:
      break
    while updatesCount <= maxUpdates:
+#      assert False, (updatesCount, maxUpdates)
       counter += 1
       updatesCount += 1
-      # Get model predictions at the end of optimization
-      if updatesCount == maxUpdates:
 
 
-       # Record reconstructions and surprisals
-       with open("/.tmp", "w") as outFile:
-         startTimePredictions = time.time()
 
-         sys.stdout = outFile
-         print(updatesCount, "Slurm", os.environ.get("SLURM_JOB_ID", "local_run"))
-         print(args)
-         print("=========================")
-         showAttention("the")
-         showAttention("was")
-         showAttention("that")
-         showAttention("fact")
-         showAttention("information")
-         showAttention("report")
-         showAttention("belief")
-         showAttention("finding")
-         showAttention("prediction")
-         showAttention("of")
-         showAttention("by")
-         showAttention("about")
-         print("=========================")
-         # Determiner
-         showAttention("the", POS="Det")
-         showAttention("a", POS="Det")
-         # Verbs
-         showAttention("was")
-         showAttention("pleased", POS="Verb")
-         showAttention("invited", POS="Verb")
-         showAttention("annoyed", POS="Verb")
-         showAttention("did", POS="Verb")
-         showAttention("failed", POS="Verb")
-         showAttention("trusted", POS="Verb")
-         showAttention("bothered", POS="Verb")
-         showAttention("admired", POS="Verb")
-         showAttention("impressed", POS="Verb")
-         showAttention("shocked", POS="Verb")
-         showAttention("appointed", POS="Verb")
-         showAttention("supported", POS="Verb")
-         showAttention("looked", POS="Verb")
-         # that
-         showAttention("that", POS="that")
-         # Noun
-         showAttention("fact", POS="Verb")
-         showAttention("information", POS="Verb")
-         showAttention("report", POS="Noun")
-         showAttention("belief", POS="Noun")
-         showAttention("finding", POS="Noun")
-         showAttention("prediction", POS="Noun")
-         showAttention("musician", POS="Noun")
-         showAttention("surgeon", POS="Noun")
-         showAttention("survivor", POS="Noun")
-         showAttention("guide", POS="Noun")
-         showAttention("fans", POS="Noun")
-         showAttention("sponsor", POS="Noun")
-         showAttention("detective", POS="Noun")
-         showAttention("time", POS="Noun")
-         showAttention("years", POS="Noun")
-         showAttention("name", POS="Noun")
-         showAttention("country", POS="Noun")
-         showAttention("school", POS="Noun")
-         showAttention("agreement", POS="Noun")
-         showAttention("series", POS="Noun")
-         showAttention("producers", POS="Noun")
-         showAttention("concerts", POS="Noun")
-         showAttention("classification", POS="Noun")
-         showAttention("house", POS="Noun")
-         showAttention("circle", POS="Noun")
-         showAttention("balance", POS="Noun")
-         showAttention("cartoon", POS="Noun")
-         showAttention("dancers", POS="Noun")
-         showAttention("immigrant", POS="Noun")
-         showAttention("teacher", POS="Noun")
-         showAttention("doctor", POS="Noun")
-         showAttention("patient", POS="Noun")
-         # Preposition
-         showAttention("of", POS="Prep")
-         showAttention("for", POS="Prep")
-         showAttention("to", POS="Prep")
-         showAttention("in", POS="Prep")
-         showAttention("by", POS="Prep")
-         showAttention("about", POS="Prep")
-         # Pronouns
-         showAttention("you", POS="Pron")
-         showAttention("we", POS="Pron")
-         showAttention("he", POS="Pron")
-         showAttention("she", POS="Pron")
-         sys.stdout = STDOUT
-      print(counter)
+#      print(counter)
      # Get a batch from the training set
       try:
-         print("GETTING NEXT")
+#         print("GETTING NEXT")
          numeric, _ = next(training_chars)
+         #assert False
       except StopIteration:
          break
+#      assert False
       printHere = (counter % 50 == 0)
       # Run this through the model: forward pass of the resource-rational objective function
       loss, charCounts = forward(numeric, printHere=printHere, train=True)
+      averageLossOverEpoch[-1][0]+= loss.item()
+      averageLossOverEpoch[-1][1] += 1
 
-      # Check if memory parameters changed 
-      #params_before = [p.clone() for p in parameters_memory()]
-
+      print("LOSS", loss, counter, [x[0]/x[1] for x in averageLossOverEpoch])
       # Calculate gradients and update parameters
       backward(loss, printHere)
 
-      
 
-      # After backward and optimizer step, parameters are updated
-      #params_after = [p for p in parameters_memory()]
-      #for i, (b, a) in enumerate(zip(params_before, params_after)):
-         #print(f"Memory param {i} changed:", not torch.equal(b, a))
       # Bad learning rate parameters might make the loss explode. In this case, stop.
       if lossHasBeenBad > 100:
           print("Loss exploding, has been bad for a while")
@@ -1248,13 +1113,6 @@ for epoch in range(20):
           print(__file__)
           print(args)
 
-   # --- Check surprisal computation ---
-   test_chars = prepareDatasetChunks(test_sentences, train=False)
-   avg =compute_surprisal_imp(memory, lm, test_sentences, epoch)
-   quit()
-   avg =compute_surprisal(memory, lm, test_chars, epoch)
-   print(f"Average surprisal at epoch {epoch}: {avg}")
-   assert False
 
 
 with open("./tmp", "w") as outFile:

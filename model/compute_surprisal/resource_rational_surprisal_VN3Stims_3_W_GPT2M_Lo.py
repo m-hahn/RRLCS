@@ -711,6 +711,10 @@ def product(x):
      r *= i
    return r
 
+# The list of tokens that the model is constrained to never erase, in order to
+#  preserve information about sentence boundaries
+# This also includes OOV, in order to exclude posterior samples with undefined
+#  syntactic structure.
 PUNCTUATION = torch.LongTensor([stoi_total[x] for x in [".", "OOV", '"', "(", ")", "'", '"', ":", ",", "'s", "[", "]"]]).cuda()
 
 def forward(numeric, train=True, printHere=False, provideAttention=False, onlyProvideMemoryResult=False, NUMBER_OF_REPLICATES=args.NUMBER_OF_REPLICATES, expandReplicates=True):
