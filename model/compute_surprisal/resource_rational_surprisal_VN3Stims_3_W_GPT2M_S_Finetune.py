@@ -16,10 +16,10 @@ assert DEVICE == "cuda"
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--language", dest="language", type=str, default="english")
-parser.add_argument("--load-from-lm", dest="load_from_lm", type=str, default=964163553) # language model taking noised input # Amortized Prediction Posterior
-parser.add_argument("--load-from-autoencoder", dest="load_from_autoencoder", type=str, default=random.choice([647336050, 516252642, 709961927, 727001672, 712478284, 524811876])) # Amortized Reconstruction Posterior
-parser.add_argument("--load-from-plain-lm", dest="load_from_plain_lm", type=str, default=random.choice([27553360, 935649231])) # plain language model without noise (Prior)
-
+parser.add_argument("--load-from-lm", dest="load_from_lm", type=str, default="----") # language model taking noised input # Amortized Prediction Posterior
+parser.add_argument("--load-from-autoencoder", dest="load_from_autoencoder", type=str, default="----") # Amortized Reconstruction Posterior
+parser.add_argument("--load-from-plain-lm", dest="load_from_plain_lm", type=str, default="----") # plain language model without noise (Prior)
+parser.add_argument("--load-from-joint", dest="load_from_joint", type=str, default=710757217)
 
 # Unique ID for this model run
 parser.add_argument("--myID", type=int, default=random.randint(0,1000000000))
@@ -420,7 +420,8 @@ memory = MemoryModel()
 
 # load checkpoint
 #checkpoint = torch.load("/Users/teodorakamova/Documents/Uni Saarland/Work/RRLCS/resource-rational-surprisal/model/data/char-lm-ud-stationary_12_SuperLong_WithAutoencoder_WithEx_Samples_Short_Combination_Subseq_VeryLong_WithSurp12_NormJudg_Short_Cond_Shift_NoComma_Bugfix_VN3Stims_3_W_GPT2M_S.py_665599355.model", map_location="cpu",weights_only=False)
-checkpoint = torch.load("../data/pred_1.0_del_0.5_simple/char-lm-ud-stationary_12_SuperLong_WithAutoencoder_WithEx_Samples_Short_Combination_Subseq_VeryLong_WithSurp12_NormJudg_Short_Cond_Shift_NoComma_Bugfix_VN3Stims_3_W_GPT2M_S.py_710757217.model", map_location="cpu",weights_only=False)
+relevantPath = glob.glob("../data/pred_1.0_del_*_simple/char-lm-ud-stationary_12_SuperLong_WithAutoencoder_WithEx_Samples_Short_Combination_Subseq_VeryLong_WithSurp12_NormJudg_Short_Cond_Shift_NoComma_Bugfix_VN3Stims_3_W_GPT2M_S.py_"+args.load_from_joint+".model")[0]
+checkpoint = torch.load(relevantPath, map_location="cpu",weights_only=False)
 print("Keys in checkpoint:", checkpoint.keys())
 
 args.learning_rate_memory = checkpoint["arguments"].learning_rate_memory
@@ -502,6 +503,7 @@ if True or args.load_from_autoencoder is not None:
   for i in range(len(checkpoint_["components"])):
       autoencoder.modules_autoencoder[i].load_state_dict(checkpoint_["components"][i])
   del checkpoint_
+  print("Note: Ultimately we're actually loading the autoencoder as finetuned in the Memory model checkpoint")
  
 # Amortized Prediction Posterior
 if True or args.load_from_lm is not None:
@@ -857,7 +859,7 @@ def compute_surprisal_imp(memory, lm, test_data, test_df, epoch, output_dir="sur
     import scoreWithGPT2Medium as scoreWithGPT2
     global topNouns
 #    topNouns = ["fact", "report"]
-    with open("LOGS/full-logs-tsv-perItem/"+__file__+"_"+str(710757217)+"_"+SANITY+"_"+str(epoch)+".tsv", "w") if SANITY != "ModelTmp" else sys.stdout as outFile:
+    with open("LOGS/full-logs-tsv-perItem/"+__file__+"_"+str(args.load_from_joint)+"_"+SANITY+"_"+str(epoch)+".tsv", "w") if SANITY != "ModelTmp" else sys.stdout as outFile:
      print("\t".join(["Noun", "Item", "Region", "Condition", "Surprisal", "SurprisalReweighted", "ThatFraction", "ThatFractionReweighted", "SurprisalsWithThat", "SurprisalsWithoutThat", "Word"]), file=outFile)
      with torch.no_grad():
       TRIALS_COUNT = 0
@@ -1050,7 +1052,7 @@ for epoch in range(40):
 
    if True:
        print("=========================")
-       with open("LOGS/memory-scores/"+__file__+"_"+str(710757217)+"_"+"Model"+"_"+str(epoch)+".tsv", "w") as outFile:
+       with open("LOGS/memory-scores/"+__file__+"_"+str(args.load_from_joint)+"_"+"Model"+"_"+str(epoch)+".tsv", "w") as outFile:
           showAttention("the")
           showAttention("was")
           showAttention("that")
@@ -1128,7 +1130,7 @@ for epoch in range(40):
           print(lastSaved)
           print(__file__)
           print(args)
-      with open("LOGS/loss/"+__file__+"_"+str(710757217)+"_"+"Model"+".tsv", "w") as outFile:
+      with open("LOGS/loss/"+__file__+"_"+str(args.load_from_joint)+"_"+"Model"+".tsv", "w") as outFile:
            print("\t".join([str(round(x[0]/(x[1]+1e-10), 3)) for x in averageLossOverEpoch]), file=outFile)
 
 
