@@ -422,7 +422,7 @@ memory = MemoryModel()
 # load checkpoint
 #checkpoint = torch.load("/Users/teodorakamova/Documents/Uni Saarland/Work/RRLCS/resource-rational-surprisal/model/data/char-lm-ud-stationary_12_SuperLong_WithAutoencoder_WithEx_Samples_Short_Combination_Subseq_VeryLong_WithSurp12_NormJudg_Short_Cond_Shift_NoComma_Bugfix_VN3Stims_3_W_GPT2M_S.py_665599355.model", map_location="cpu",weights_only=False)
 relevantPath = glob.glob("../data/pred_1.0_del_*_simple/char-lm-ud-stationary_12_SuperLong_WithAutoencoder_WithEx_Samples_Short_Combination_Subseq_VeryLong_WithSurp12_NormJudg_Short_Cond_Shift_NoComma_Bugfix_VN3Stims_3_W_GPT2M_S.py_"+args.load_from_joint+".model")[0]
-checkpoint = torch.load(relevantPath, map_location="cpu",weights_only=False)
+checkpoint = torch.load(relevantPath, map_location=DEVICE,weights_only=False)
 print("Keys in checkpoint:", checkpoint.keys())
 
 args.learning_rate_memory = checkpoint["arguments"].learning_rate_memory
@@ -500,7 +500,7 @@ if True or args.load_from_autoencoder is not None:
   print(args.load_from_autoencoder)
   print(checkpoint["arguments"].load_from_autoencoder)
   args.load_from_autoencoder = checkpoint["arguments"].load_from_autoencoder
-  checkpoint_ = torch.load("../data/"+args.language+"_"+"autoencoder2_mlp_bidir_Erasure_SelectiveLoss.py"+"_code_"+str(args.load_from_autoencoder)+".txt", map_location=torch.device('cpu'))
+  checkpoint_ = torch.load("../data/"+args.language+"_"+"autoencoder2_mlp_bidir_Erasure_SelectiveLoss.py"+"_code_"+str(args.load_from_autoencoder)+".txt", map_location=torch.device(DEVICE))
   for i in range(len(checkpoint_["components"])):
       autoencoder.modules_autoencoder[i].load_state_dict(checkpoint_["components"][i])
   del checkpoint_
@@ -510,7 +510,7 @@ if True or args.load_from_autoencoder is not None:
 if True or args.load_from_lm is not None:
   lm_file = "char-lm-ud-stationary-vocab-wiki-nospaces-bptt-2-words_NoNewWeightDrop_NoChars_Erasure.py"
   args.load_from_lm = checkpoint["arguments"].load_from_lm
-  checkpoint_ = torch.load("../data/"+args.language+"_"+lm_file+"_code_"+str(args.load_from_lm)+".txt", map_location=torch.device('cpu'))
+  checkpoint_ = torch.load("../data/"+args.language+"_"+lm_file+"_code_"+str(args.load_from_lm)+".txt", map_location=torch.device(DEVICE))
   for i in range(len(checkpoint_["components"])):
       lm.modules_lm[i].load_state_dict(checkpoint_["components"][i])
   del checkpoint_
@@ -519,7 +519,7 @@ from torch.autograd import Variable
 
 # This is put back from resource_rational_surprisal_VN3Stims_3_W_GPT2M_Lo.py
 if "lm_embeddings" in checkpoint:
-  print(lm.word_embeddings.weight)
+  print(lm.word_embeddings.weight, checkpoint["lm_embeddings"]["weight"])
   assert (checkpoint["lm_embeddings"]["weight"] == lm.word_embeddings.weight).all()
   del checkpoint["lm_embeddings"]
 assert set(list(checkpoint)) == set(["arguments", "words", "memory", "autoencoder"]), list(checkpoint)
