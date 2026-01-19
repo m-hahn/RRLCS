@@ -1,0 +1,27 @@
+Noun	Item	Region	Condition	Surprisal	SurprisalReweighted	ThatFraction	ThatFractionReweighted	SurprisalsWithThat	SurprisalsWithoutThat	Word
+exp.b.1	was	4.369	4.358	The insinuation that the teacher failed the student was only a malicious smear.
+exp.d.1	was	7.389	6.68	The insinuation that the teacher who the principal who excelled in leadership liked failed the student was only a malicious smear.
+exp.a.1	was	5.305	5.305	The insinuation was only a malicious smear.
+exp.c.1	was	5.256	5.075	The insinuation that the teacher who the principal liked failed the student was only a malicious smear.
+exp.c.2	seemed	8.936	8.622	The certainty that the doctor who the colleague mistrusted cured the patients seemed hard to believe.
+exp.b.2	seemed	9.653	9.508	The certainty that the doctor cured the patients seemed hard to believe.
+exp.a.2	seemed	10.392	10.392	The certainty seemed hard to believe.
+exp.d.2	seemed	9.866	9.58	The certainty that the doctor who the colleague who discovered new therapies mistrusted cured the patients seemed hard to believe.
+exp.b.3	was	8.136	8.066	The understanding that the president appointed the commander was entirely bogus.
+exp.d.3	was	8.693	8.977	The understanding that the president who the farmer who implemented agricultural policies admired appointed the commander was entirely bogus.
+exp.c.3	was	6.318	5.86	The understanding that the president who the farmer admired appointed the commander was entirely bogus.
+exp.a.3	was	6.387	6.387	The understanding was entirely bogus.
+exp.b.4	appeared	10.124	10.049	The guess that the victim sued the criminal appeared on TV.
+exp.c.4	appeared	11.94	11.813	The guess that the victim who the swimmer rescued sued the criminal appeared on TV.
+exp.d.4	appeared	12.944	12.943	The guess that the victim who the swimmer who administered first aid rescued sued the criminal appeared on TV.
+exp.a.4	appeared	9.242	9.242	The guess appeared on TV.
+exp.d.5	drove	11.101	10.956	The conviction that the guest who the cousin who taught yoga invited visited the uncle drove Jill crazy.
+exp.b.5	drove	10.453	10.461	The conviction that the guest visited the uncle drove Jill crazy.
+exp.c.5	drove	9.943	9.903	The conviction that the guest who the cousin invited visited the uncle drove Jill crazy.
+exp.a.5	drove	11.848	11.848	The conviction drove Jill crazy.
+exp.c.6	became	10.001	10.023	The story that the psychiatrist who the nurse assisted diagnosed the patient became widely known.
+exp.d.6	became	9.173	9.123	The story that the psychiatrist who the nurse who prescribed medication assisted diagnosed the patient became widely known.
+exp.a.6	became	7.931	7.931	The story became widely known.
+exp.b.6	became	9.761	9.725	The story that the psychiatrist diagnosed the patient became widely known.
+exp.b.7	was	5.749	5.692	The sense that the driver phoned the tourist was absolutely true.
+exp.a.7	was	6.477	6.477	The sense was absolutely true.

@@ -1,0 +1,177 @@
+Noun	Item	Region	Condition	Surprisal	SurprisalReweighted	ThatFraction	ThatFractionReweighted	SurprisalsWithThat	SurprisalsWithoutThat	Word
+exp.b.1	was	5.426	4.508	The insinuation that the teacher failed the student was only a malicious smear.
+exp.d.1	was	5.619	4.86	The insinuation that the teacher who the principal who excelled in leadership liked failed the student was only a malicious smear.
+exp.a.1	was	5.399	5.305	The insinuation was only a malicious smear.
+exp.c.1	was	5.981	5.199	The insinuation that the teacher who the principal liked failed the student was only a malicious smear.
+exp.c.2	seemed	9.512	8.41	The certainty that the doctor who the colleague mistrusted cured the patients seemed hard to believe.
+exp.b.2	seemed	9.547	9.407	The certainty that the doctor cured the patients seemed hard to believe.
+exp.a.2	seemed	10.392	10.392	The certainty seemed hard to believe.
+exp.d.2	seemed	10.39	10.608	The certainty that the doctor who the colleague who discovered new therapies mistrusted cured the patients seemed hard to believe.
+exp.b.3	was	8.093	8.116	The understanding that the president appointed the commander was entirely bogus.
+exp.d.3	was	7.956	7.788	The understanding that the president who the farmer who implemented agricultural policies admired appointed the commander was entirely bogus.
+exp.c.3	was	7.076	6.504	The understanding that the president who the farmer admired appointed the commander was entirely bogus.
+exp.a.3	was	6.486	6.387	The understanding was entirely bogus.
+exp.b.4	appeared	10.971	9.697	The guess that the victim sued the criminal appeared on TV.
+exp.c.4	appeared	12.082	10.394	The guess that the victim who the swimmer rescued sued the criminal appeared on TV.
+exp.d.4	appeared	11.778	9.036	The guess that the victim who the swimmer who administered first aid rescued sued the criminal appeared on TV.
+exp.a.4	appeared	9.838	9.256	The guess appeared on TV.
+exp.d.5	drove	13.073	11.715	The conviction that the guest who the cousin who taught yoga invited visited the uncle drove Jill crazy.
+exp.b.5	drove	10.535	10.498	The conviction that the guest visited the uncle drove Jill crazy.
+exp.c.5	drove	12.599	12.087	The conviction that the guest who the cousin invited visited the uncle drove Jill crazy.
+exp.a.5	drove	11.841	11.848	The conviction drove Jill crazy.
+exp.c.6	became	8.803	8.0	The story that the psychiatrist who the nurse assisted diagnosed the patient became widely known.
+exp.d.6	became	8.863	8.256	The story that the psychiatrist who the nurse who prescribed medication assisted diagnosed the patient became widely known.
+exp.a.6	became	7.931	7.931	The story became widely known.
+exp.b.6	became	9.198	8.873	The story that the psychiatrist diagnosed the patient became widely known.
+exp.b.7	was	5.919	5.626	The sense that the driver phoned the tourist was absolutely true.
+exp.a.7	was	6.593	6.478	The sense was absolutely true.
+exp.c.7	was	6.769	5.799	The sense that the driver who the guide called phoned the tourist was absolutely true.
+exp.d.7	was	7.008	6.839	The sense that the driver who the guide who directed traffic called phoned the tourist was absolutely true.
+exp.c.8	appeared	10.718	10.428	The perception that the actor who the fans loved greeted the director appeared to be true.
+exp.b.8	appeared	10.318	9.985	The perception that the actor greeted the director appeared to be true.
+exp.d.8	appeared	10.31	8.672	The perception that the actor who the fans who followed his career loved greeted the director appeared to be true.
+exp.a.8	appeared	11.017	11.012	The perception appeared to be true.
+exp.c.9	proved	10.838	10.316	The assertion that the banker who the analyst defrauded trusted the customer proved to be made up.
+exp.d.9	proved	10.546	10.336	The assertion that the banker who the analyst who overlooked suspicious transactions defrauded trusted the customer proved to be made up.
+exp.a.9	proved	9.178	9.174	The assertion proved to be made up.
+exp.b.9	proved	9.398	9.309	The assertion that the banker trusted the customer proved to be made up.
+exp.c.10	was	5.455	4.597	The impression that the judge who the attorney hated acquitted the defendant was a lie.
+exp.d.10	was	5.205	4.691	The impression that the judge who the attorney who presented compelling evidence hated acquitted the defendant was a lie.
+exp.a.10	was	4.285	4.19	The impression was a lie.
+exp.b.10	was	2.878	2.86	The impression that the judge acquitted the defendant was a lie.
+exp.d.11	seemed	10.722	10.086	The observation that the neighbour who the woman who heard rumors distrusted poisoned the dog seemed to be a malicious smear.
+exp.b.11	seemed	8.063	7.874	The observation that the neighbour poisoned the dog seemed to be a malicious smear.
+exp.c.11	seemed	10.259	9.142	The observation that the neighbour who the woman distrusted poisoned the dog seemed to be a malicious smear.
+exp.a.11	seemed	8.782	8.706	The observation seemed to be a malicious smear.
+exp.a.12	was	5.843	4.429	The reminder was sad to hear.
+exp.c.12	was	8.049	5.945	The reminder that the actor who the producer blamed got very sick was sad to hear.
+exp.d.12	was	8.57	7.404	The reminder that the actor who the producer who directed scenes blamed got very sick was sad to hear.
+exp.b.12	was	6.092	5.22	The reminder that the actor got very sick was sad to hear.
+exp.c.13	was	5.643	4.317	The indication that the captain who the crew trusted commanded the sailor was nice to hear.
+exp.a.13	was	5.813	5.012	The indication was nice to hear.
+exp.d.13	was	5.384	3.795	The indication that the captain who the crew who saved lives trusted commanded the sailor was nice to hear.
+exp.b.13	was	4.156	2.852	The indication that the captain commanded the sailor was nice to hear.
+exp.a.14	seemed	9.223	9.078	The complaint seemed absurd.
+exp.c.14	seemed	13.089	10.394	The complaint that the manager who the boss authorized hired the intern seemed absurd.
+exp.b.14	seemed	9.046	8.8	The complaint that the manager hired the intern seemed absurd.
+exp.d.14	seemed	13.226	11.481	The complaint that the manager who the boss who approved documents authorized hired the intern seemed absurd.
+exp.a.15	was	3.902	3.889	The evidence was entirely correct.
+exp.b.15	was	3.093	2.789	The evidence that the bully harassed the boy was entirely correct.
+exp.c.15	was	5.906	5.288	The evidence that the bully who the children hated harassed the boy was entirely correct.
+exp.d.15	was	4.693	4.399	The evidence that the bully who the children who suffered abuse hated harassed the boy was entirely correct.
+exp.c.16	reached	12.13	11.614	The rumor that the plaintiff who the jury interrogated interrupted the witness reached the news.
+exp.d.16	reached	12.461	12.148	The rumor that the plaintiff who the jury who examined documents interrogated interrupted the witness reached the news.
+exp.a.16	reached	7.989	7.884	The rumor reached the news.
+exp.b.16	reached	12.293	12.117	The rumor that the plaintiff interrupted the witness reached the news.
+exp.d.17	sounds	10.166	9.609	The prediction that the drunkard who the thug who stumbled clumsily hit outwitted the bartender sounds hilarious.
+exp.c.17	sounds	10.117	9.692	The prediction that the drunkard who the thug hit outwitted the bartender sounds hilarious.
+exp.b.17	sounds	8.822	8.517	The prediction that the drunkard outwitted the bartender sounds hilarious.
+exp.a.17	sounds	9.158	9.048	The prediction sounds hilarious.
+exp.d.18	proved	11.771	11.489	The opinion that the medic who the survivor who received treatment thanked greeted the surgeon proved to be untrue.
+exp.a.18	proved	10.57	10.262	The opinion proved to be untrue.
+exp.c.18	proved	11.061	10.426	The opinion that the medic who the survivor thanked greeted the surgeon proved to be untrue.
+exp.b.18	proved	10.185	10.196	The opinion that the medic greeted the surgeon proved to be untrue.
+exp.b.19	took	7.786	7.477	The confirmation that the lifesaver rescued the swimmer took the townspeople by surprise.
+exp.d.19	took	8.62	8.413	The confirmation that the lifesaver who the soldier who demonstrated techniques taught rescued the swimmer took the townspeople by surprise.
+exp.a.19	took	8.224	8.121	The confirmation took the townspeople by surprise.
+exp.c.19	took	8.394	7.908	The confirmation that the lifesaver who the soldier taught rescued the swimmer took the townspeople by surprise.
+exp.d.20	was	5.499	4.327	The remark that the fisherman who the gardener who planted seeds helped admired the politician was interesting.
+exp.a.20	was	2.818	2.724	The remark was interesting.
+exp.c.20	was	5.111	3.801	The remark that the fisherman who the gardener helped admired the politician was interesting.
+exp.b.20	was	4.445	3.646	The remark that the fisherman admired the politician was interesting.
+exp.b.21	was	3.578	3.578	The assumption that the janitor ignored the audience was funny.
+exp.d.21	was	5.934	5.782	The assumption that the janitor who the organiser who planned events criticised ignored the audience was funny.
+exp.a.21	was	3.837	3.842	The assumption was funny.
+exp.c.21	was	6.504	6.101	The assumption that the janitor who the organiser criticised ignored the audience was funny.
+exp.a.22	drove	12.729	12.282	The statement drove everyone crazy.
+exp.b.22	drove	13.318	13.313	The statement that the investor deceived the entrepreneur drove everyone crazy.
+exp.d.22	drove	12.782	12.657	The statement that the investor who the scientist who published research detested deceived the entrepreneur drove everyone crazy.
+exp.c.22	drove	11.931	12.261	The statement that the investor who the scientist detested deceived the entrepreneur drove everyone crazy.
+exp.d.23	went	8.885	8.865	The idea that the firefighter who the neighbour who spread rumors insulted rescued the houseowner went unnoticed.
+exp.b.23	went	7.631	7.469	The idea that the firefighter rescued the houseowner went unnoticed.
+exp.c.23	went	8.959	8.068	The idea that the firefighter who the neighbour insulted rescued the houseowner went unnoticed.
+exp.a.23	went	8.412	8.398	The idea went unnoticed.
+exp.c.24	was	7.449	5.265	The announcement that the agent who the FBI sent arrested the criminal was acknowledged.
+exp.d.24	was	8.237	6.474	The announcement that the agent who the FBI who conducted investigations sent arrested the criminal was acknowledged.
+exp.a.24	was	3.22	3.152	The announcement was acknowledged.
+exp.b.24	was	5.427	3.961	The announcement that the agent arrested the criminal was acknowledged.
+exp.d.25	was	4.794	4.524	The news that the plumber who the apprentice who needed advice consulted assisted the woman was true.
+exp.a.25	was	4.986	4.657	The news was true.
+exp.b.25	was	4.008	3.504	The news that the plumber assisted the woman was true.
+exp.c.25	was	5.984	4.501	The news that the plumber who the apprentice consulted assisted the woman was true.
+exp.b.26	deserved	9.412	8.997	The thought that the senator defeated the opponent deserved attention.
+exp.d.26	deserved	11.836	11.6	The thought that the senator who the diplomat who sought influence supported defeated the opponent deserved attention.
+exp.c.26	deserved	11.572	11.111	The thought that the senator who the diplomat supported defeated the opponent deserved attention.
+exp.a.26	deserved	13.132	13.134	The thought deserved attention.
+exp.b.27	did	6.338	6.301	The truth that the fiance married the bride did not surprise anyone.
+exp.d.27	did	7.75	7.242	The truth that the fiance who the author who wrote novels met married the bride did not surprise anyone.
+exp.c.27	did	7.977	6.536	The truth that the fiance who the author met married the bride did not surprise anyone.
+exp.a.27	did	7.953	7.953	The truth did not surprise anyone.
+exp.b.28	came	9.492	8.38	The belief that the businessman fired the employee came as a disappointment.
+exp.c.28	came	8.847	8.874	The belief that the businessman who the sponsor backed fired the employee came as a disappointment.
+exp.a.28	came	9.776	9.764	The belief came as a disappointment.
+exp.d.28	came	8.616	8.739	The belief that the businessman who the sponsor who provided funding backed fired the employee came as a disappointment.
+exp.d.29	shocked	11.007	10.69	The conjecture that the thief who the detective who investigated crimes caught robbed the woman shocked her family.
+exp.b.29	shocked	11.747	11.694	The conjecture that the thief robbed the woman shocked her family.
+exp.a.29	shocked	14.071	14.061	The conjecture shocked her family.
+exp.c.29	shocked	11.168	10.804	The conjecture that the thief who the detective caught robbed the woman shocked her family.
+exp.c.30	seemed	10.324	9.157	The accusation that the criminal who the stranger distracted abducted the officer seemed concerning.
+exp.b.30	seemed	9.385	9.025	The accusation that the criminal abducted the officer seemed concerning.
+exp.d.30	seemed	10.359	9.081	The accusation that the criminal who the stranger who caused chaos distracted abducted the officer seemed concerning.
+exp.a.30	seemed	8.368	8.337	The accusation seemed concerning.
+exp.c.31	was	7.521	6.68	The contention that the customer who the vendor welcomed contacted the clerk was very believable.
+exp.b.31	was	3.719	3.613	The contention that the customer contacted the clerk was very believable.
+exp.a.31	was	4.763	3.749	The contention was very believable.
+exp.d.31	was	7.087	7.041	The contention that the customer who the vendor who provided assistance welcomed contacted the clerk was very believable.
+exp.c.32	troubled	13.703	13.233	The concern that the commander who the president appointed resigned yesterday troubled people.
+exp.d.32	troubled	13.18	13.38	The concern that the commander who the president who made decisions appointed resigned yesterday troubled people.
+exp.b.32	troubled	12.079	11.902	The concern that the commander resigned yesterday troubled people.
+exp.a.32	troubled	12.434	12.365	The concern troubled people.
+exp.d.33	calmed	14.965	14.727	The conclusion that the trickster who the woman who wore a hat recognized was arrested by the police calmed people down.
+exp.a.33	calmed	15.063	15.055	The conclusion calmed people down.
+exp.b.33	calmed	14.325	14.166	The conclusion that the trickster was arrested by the police calmed people down.
+exp.c.33	calmed	15.436	14.879	The conclusion that the trickster who the woman recognized was arrested by the police calmed people down.
+exp.d.34	did	7.547	7.072	The disclosure that the administrator who the farmer who provided support endorsed was elected three days ago did not bother the farmer.
+exp.b.34	did	9.213	8.462	The disclosure that the administrator was elected three days ago did not bother the farmer.
+exp.c.34	did	7.799	7.296	The disclosure that the administrator who the farmer endorsed was elected three days ago did not bother the farmer.
+exp.a.34	did	7.173	7.137	The disclosure did not bother the farmer.
+exp.c.35	gave	11.44	10.457	The allegation that the politician who the banker bribed seemed corrupt to everyone gave John the chills.
+exp.d.35	gave	10.6	9.803	The allegation that the politician who the banker who laundered money bribed seemed corrupt to everyone gave John the chills.
+exp.b.35	gave	9.612	7.92	The allegation that the politician seemed corrupt to everyone gave John the chills.
+exp.a.35	gave	8.877	8.848	The allegation gave John the chills.
+exp.d.36	did	10.522	10.433	The speculation that the sculptor who the painter who exhibited talent admired made sculptures in the US did not surprise anyone.
+exp.c.36	did	10.738	10.734	The speculation that the sculptor who the painter admired made sculptures in the US did not surprise anyone.
+exp.a.36	did	7.137	7.059	The speculation did not surprise anyone.
+exp.b.36	did	9.483	9.189	The speculation that the sculptor made sculptures in the US did not surprise anyone.
+exp.b.37	turned	9.563	9.513	The myth that the runner won the marathon in France turned out to be incorrect.
+exp.a.37	turned	10.201	10.209	The myth turned out to be incorrect.
+exp.d.37	turned	9.663	9.26	The myth that the runner who the psychiatrist who struggled with anxiety treated won the marathon in France turned out to be incorrect.
+exp.c.37	turned	9.347	9.002	The myth that the runner who the psychiatrist treated won the marathon in France turned out to be incorrect.
+exp.d.38	was	4.839	3.635	The recognition that the analyst who the banker who managed investments trusted repaired the TV this morning was very believable.
+exp.c.38	was	4.407	4.112	The recognition that the analyst who the banker trusted repaired the TV this morning was very believable.
+exp.b.38	was	3.904	3.492	The recognition that the analyst repaired the TV this morning was very believable.
+exp.a.38	was	5.771	5.691	The recognition was very believable.
+exp.a.39	seemed	10.823	10.608	The view seemed very interesting.
+exp.b.39	seemed	9.669	8.554	The view that the child wrote articles in newspapers seemed very interesting.
+exp.c.39	seemed	11.915	11.222	The view that the child who the medic rescued wrote articles in newspapers seemed very interesting.
+exp.d.39	seemed	11.692	11.155	The view that the child who the medic who provided aid rescued wrote articles in newspapers seemed very interesting.
+exp.c.40	was	5.843	5.012	The notion that the carpenter who the craftsman carried hurt the apprentice was acknowledged.
+exp.d.40	was	5.295	4.621	The notion that the carpenter who the craftsman who designed cabinets carried hurt the apprentice was acknowledged.
+exp.a.40	was	6.273	6.273	The notion was acknowledged.
+exp.b.40	was	4.057	4.007	The notion that the carpenter hurt the apprentice was acknowledged.
+exp.c.41	seemed	11.08	9.724	The proof that the daughter who the sister found greeted the grandmother seemed concerning.
+exp.d.41	seemed	11.74	11.087	The proof that the daughter who the sister who lost contact found greeted the grandmother seemed concerning.
+exp.a.41	seemed	9.252	9.134	The proof seemed concerning.
+exp.b.41	seemed	9.355	9.221	The proof that the daughter greeted the grandmother seemed concerning.
+exp.c.42	proved	11.285	10.631	The fact that the tenant who the foreman looked for questioned the shepherd proved to be made up.
+exp.a.42	proved	11.338	11.297	The fact proved to be made up.
+exp.d.42	proved	11.172	10.735	The fact that the tenant who the foreman who supplied materials looked for questioned the shepherd proved to be made up.
+exp.b.42	proved	8.869	8.727	The fact that the tenant questioned the shepherd proved to be made up.
+exp.a.43	sounded	10.133	10.13	The suggestion sounded surprising.
+exp.b.43	sounded	12.283	12.043	The suggestion that the pharmacist questioned the customer sounded surprising.
+exp.d.43	sounded	13.221	13.363	The suggestion that the pharmacist who the stranger who inquired prescriptions saw questioned the customer sounded surprising.
+exp.c.43	sounded	13.557	12.578	The suggestion that the pharmacist who the stranger saw questioned the customer sounded surprising.
+exp.d.44	had	7.401	5.5	The revelation that the paediatrician who the receptionist who scheduled appointments worked for mistrusted the parent had troubled people.
+exp.a.44	had	6.711	6.71	The revelation had troubled people.
+exp.c.44	had	6.748	5.443	The revelation that the paediatrician who the receptionist worked for mistrusted the parent had troubled people.
+exp.b.44	had	7.245	7.388	The revelation that the paediatrician mistrusted the parent had troubled people.
